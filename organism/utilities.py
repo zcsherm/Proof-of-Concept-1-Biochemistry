@@ -31,6 +31,8 @@ Add more functions or trim? Maybe give each one 2 bytecodes, but some only have 
 
 func_names = ['linear', 'inverse linear', 'exponential', 'inverse exponential', 'radical', 'inverse radical', 'sigmoid', 'inverse sigmoid', 'negative square root']
 bits_needed = [(0), (0), (4), (4), (4), (4), (7,7), (7,7), (6,6)]
+functions  = [linear, inverse_linear, exponential, inverse_exponential, radical, inverse_radical, sigmoid, reverse_sigmoid, reverse_square]
+
 def linear():
     def linear_func(x):
         return x
