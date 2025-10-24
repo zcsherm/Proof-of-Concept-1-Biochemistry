@@ -112,7 +112,7 @@ class Emitter(BioChemGene):
         """
         Determines how much is released by default. I'm thinking a number between 0-10, mutations can increase? Outputs units, rather than concentrations
         """
-        self._rate = rate
+        self._rate = rate/5
 
     def read_param(self):
         return self._organ.get_parameter(self.parameter_name)
