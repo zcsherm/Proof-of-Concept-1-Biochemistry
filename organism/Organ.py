@@ -63,7 +63,7 @@ class InternalOrgan(Organ):
             
     def release_chemical(self, chemical, amount):
         amount *= self._health
-        self._owner.get_chemical(chemical, amount)
+        self._owner.add_chemical(chemical, amount)
         
     def get_health(self):
         return self._health
@@ -73,10 +73,13 @@ class InternalOrgan(Organ):
 
     def get_reaction_rate(self):
         return self._reaction_rate
+
+    def get_concentration(self, chemical):
+        return self._owner.get_concentration(chemical)
         
     def get_param_adjust(self, gene=>Receptor):
         return gene.adjust_parameter()
-
+        
     def activate_organ(self):
         for gene in self._genes:
             type = gene.get_type()
