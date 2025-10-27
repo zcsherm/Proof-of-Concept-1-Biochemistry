@@ -7,13 +7,13 @@ O_PARAM_ONE = b'00001'
 O_PARAM_TWO = b'00101'
 GENE_START = b'11010'
 GENE_TYPE = b'1'          # Emitter
-GENE_RATE = b''
+GENE_RATE = b'11101'
 GENE_FUNC = b'0110010'    # Exponential -> pow of 2
 GENE_PARAMS = b'00010101' #Link to health and chem 5
 GENE_TWO = b'0'
 GENE_TWO_FUNC = b'11110101101000001' # Reverse sigmoid with coef = 86, mean= 65/128
 GENE_TWO_PARAMS = b'00100011' # Link to reaction rate and chem 3
-TEST_GENOME = ORGAN_START + O_PARAM_ONE + O_PARAM_TWO + GENE_START + GENE_TYPE + GENE_FUNC +GENE_PARAMS + GENE_TWO + GENE_TWO_FUNC + GENE_TWO_PARAMS + ORGAN_START
+TEST_GENOME = ORGAN_START + O_PARAM_ONE + O_PARAM_TWO + GENE_START + GENE_TYPE + GENE_RATE + GENE_FUNC +GENE_PARAMS + GENE_TWO + GENE_TWO_FUNC + GENE_TWO_PARAMS + ORGAN_START
 
 
 
@@ -85,10 +85,11 @@ class FirstTest(unittest.TestCase):
         emitter = organism_b.get_organs[0].get_genes[0]
         read_val = emitter.read_param()
         output = emitter.get_output_amt()
-        receptor.release_chemical()
-        self.assertAlmostEqual(read_val, 1/32, .001)
-        
-        self.assertTrue(organism_b.get_concentration(3) > .5)
+        emitter.release_chemical()
+        self.assertAlmostEqual(read_val, 1/32, delta=.001)
+        self.assertAlmostEqual(output, .0048, delta=.001)
+        print(f"Outputs and inputs are good for test9")
+        self.assertAlmostEqual(organism_b.get_chemical(3), .0048, delta=.001)
 
 class SecondTest(unittest.TestCase):
     pass
