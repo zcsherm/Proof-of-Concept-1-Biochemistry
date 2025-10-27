@@ -132,6 +132,29 @@ class SecondTest(unittest.TestCase):
         sb.countplot(df, x='Gene Count')
         plt.show()
         sb.countplot(df, x='Average Genes per Organ')
+
+    def test3(self):
+        """
+        Now run this for 600,800,1000 bits
+        """
+        random.seed(None)
+        for i in range(600, 1200, 200):
+            for i in range(100):
+                rand_genes=generate_genome()
+                self._decoder.set_genome(rand_genes)
+                new_creature = self._decoder.read_genome()
+                datum.append(analyze_organism(new_creature))
+            # Ok so now datum contains 100 frames of data for 400 bit genomes, how do analyze?
+            # Maybe condense each into a column of a df
+            df = pd.DataFrame(original_data)
+            for row in datum:
+                new_row_df = pd.DataFrame([row])
+                df = pd.concat([df, new_row_df], ignore_index=True)
+            sb.countplot(df, x='Organ Count')
+            plt.show()
+            sb.countplot(df, x='Gene Count')
+            plt.show()
+            sb.countplot(df, x='Average Genes per Organ')
         
 
 if __name__ == '__main__':
