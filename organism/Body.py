@@ -26,7 +26,7 @@ class Body:
 
     def calc_concentrations(self):
         total = 0
-        for key, val in self._chems: 
+        for key, val in self._chems:
             total += val
         if total == 0:
             total = 1
@@ -58,7 +58,7 @@ class Body:
     def get_organs(self):
         return self._organs
 
-    def descrie(self):
+    def describe(self):
         print(f"Creature {self._id):")
         for organ in self._organs:
             organ.describe()
