@@ -99,7 +99,7 @@ class FirstTest(unittest.TestCase):
 class SecondTest(unittest.TestCase):
 
     def setUpClass(cls):
-        random.seed(SEED)
+        random.seed(SEED) # Comment out for truly random testing.
         cls._decoder = Decode()
         cls._genome = generate_genome()
 
@@ -113,6 +113,7 @@ class SecondTest(unittest.TestCase):
         self.assertTrue(len(self._creature.get_organs()) > 0)
 
     def test2(self):
+        # Generate 100 genomes and construct a creature for each, then find out how many organs/genes there were and plot these
         original_data = analyze_organism(self._creature)
         datum = []
         for i in range(100):
