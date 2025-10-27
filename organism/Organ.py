@@ -101,3 +101,21 @@ class InternalOrgan(Organ):
         self._act_rate = sum(self._act_rate_receptors) / max(len(self._act_rate_receptors), 1)
         average_health_change = sum(self._health_receptors) / max(len(self._health_receptors), 1)
         self._health = health_decay(self._health, average_health_change)
+
+    def describe(self):
+        """
+        Provide a readout on all aspects of the organ, including parameters and genes
+        """
+        s1 = f"Organ {self._id}:"
+        s2 = f"\t This organ has Health: {self._health}, Activation Rate: {self._act_rate}, Reaction Rate: {self._reaction_rate}"
+        s3 = f"\t This organ has {len(self._genes)} genes:"
+        print(s1, s2, s3)
+        for gene in genes:
+            gene.describe()
+
+    def status(self):
+        s1 = f"Organ{self._id}"
+        s2 = f"Health: {self._health}"
+        s3 = f"Activation Rate: {self._act_rate}"
+        s4 = f"Reaction Rate: {self._reaction_rate}"
+        print(s1, s2, s3, s4)
