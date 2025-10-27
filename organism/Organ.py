@@ -110,7 +110,7 @@ class InternalOrgan(Organ):
         s2 = f"\t This organ has Health: {self._health}, Activation Rate: {self._act_rate}, Reaction Rate: {self._reaction_rate}"
         s3 = f"\t This organ has {len(self._genes)} genes:"
         print(s1, s2, s3)
-        for gene in genes:
+        for gene in self._genes:
             gene.describe()
 
     def status(self):
