@@ -1,7 +1,10 @@
 import unittest
 import copy
 import random
-from utilities import generate_genome
+import numpy as np
+import seaborn as sb
+import matplotlib as plt
+from utilities import generate_genome, analyze_organism
 from Constructor import Decoder
 
 ORGAN_START = b'11111'
@@ -108,6 +111,27 @@ class SecondTest(unittest.TestCase):
         self._creature.describe()
         # Ensure at least 1 organ was found.
         self.assertTrue(len(self._creature.get_organs()) > 0)
+
+    def test2(self):
+        original_data = analyze_organism(self._creature)
+        datum = []
+        for i in range(100):
+            rand_genes=generate_genome()
+            self._decoder.set_genome(rand_genes)
+            new_creature = self._decoder.read_genome()
+            datum.append(analyze_organism(new_creature))
+        # Ok so now datum contains 100 frames of data for 400 bit genomes, how do analyze?
+        # Maybe condense each into a column of a df
+        df = pd.DataFrame(original_data)
+        for row in datum:
+            new_row_df = pd.DataFrame([row])
+            df = pd.concat([df, new_row_df], ignore_index=True)
+        sb.countplot(df, x='Organ Count')
+        plt.show()
+        sb.countplot(df, x='Gene Count')
+        plt.show()
+        sb.countplot(df, x='Average Genes per Organ')
+        
 
 if __name__ == '__main__':
     unittest.main()
