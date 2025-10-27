@@ -87,8 +87,8 @@ class Decoder:
         self._current_organ = Organ(self)
         self._current_organ.set_health()
         val = self.read_at_pos()
-        self._current_organ.set_act_rate(1/int(val))
-        self._set_act_rate(1/int(self.read_at_pos()))
+        self._current_organ.set_reaction_rate(int(val)/32)
+        self._current_organ.set_act_rate(int(self.read_at_pos())/32)
         return
 
     def read_gene_data():
