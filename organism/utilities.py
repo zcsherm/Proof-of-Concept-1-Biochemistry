@@ -24,7 +24,13 @@ def generate_id(length=10):
     """
     characters = string.ascii_letters + string.digits  # a-z, A-Z, 0-9
     return ''.join(random.choices(characters, k=length))
-    
+
+
+def generate_genome(length=400):
+    bits = b''
+    for i in range(length):
+        bits += random.choice([b'0',b'1'])
+    return bits
 """
 Add more functions or trim? Maybe give each one 2 bytecodes, but some only have 1?
 """
