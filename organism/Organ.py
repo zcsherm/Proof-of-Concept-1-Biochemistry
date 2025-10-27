@@ -40,7 +40,9 @@ class InternalOrgan(Organ):
         self._reaction_rate_receptors = []
         self._parameters.append(('reaction rate', self._reaction_rate))
 
-
+    def get_genes(self):
+        return self._genes
+        
     def debug_set_health(self, val):
         self._health = max(min(val,1),0)
         
