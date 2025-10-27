@@ -56,9 +56,13 @@ class Body:
             return
 
     def describe(self):
+        print(f"Creature {self._id):"
         for organ in self._organs:
             organ.describe()
 
     def status(self):
+        print(f"Creature {self._id):")
+        for chemical in Chemical.CHEMS:
+            print(f"Chemical {chemical} -- units: {self._chems{chemical}, concentrations: {self._concentrations{chemical}}"
         for organ in self._organs:
             organ.status()
