@@ -76,7 +76,7 @@ def sigmoid(coefficient, mean):
     """
     mean = 1/(1+mean)
     def sig(x):
-        return 1 / (1 + math.e ** ((coefficient * x * -1) + (1/mean * coefficient)))
+        return 1 / (1 + math.e ** ((coefficient * x * -1) + (mean/128 * coefficient)))
     return sig
 
 def reverse_sigmoid(coefficient, mean):
