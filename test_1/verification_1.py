@@ -1,5 +1,7 @@
 import unittest
 import copy
+import random
+from utilities import generate_genome
 from Constructor import Decoder
 
 ORGAN_START = b'11111'
@@ -15,7 +17,7 @@ GENE_TWO_FUNC = b'11110101101000001' # Reverse sigmoid with coef = 86, mean= 65/
 GENE_TWO_PARAMS = b'00100011' # Link to reaction rate and chem 3
 TEST_GENOME = ORGAN_START + O_PARAM_ONE + O_PARAM_TWO + GENE_START + GENE_TYPE + GENE_RATE + GENE_FUNC +GENE_PARAMS + GENE_TWO + GENE_TWO_FUNC + GENE_TWO_PARAMS + ORGAN_START
 
-
+SEED = 69420
 
 class FirstTest(unittest.TestCase):
     """
@@ -92,8 +94,20 @@ class FirstTest(unittest.TestCase):
         self.assertAlmostEqual(organism_b.get_chemical(3), .0048, delta=.001)
 
 class SecondTest(unittest.TestCase):
-    pass
 
+    def setUpClass(cls):
+        random.seed(SEED)
+        cls._decoder = Decode()
+        cls._genome = generate_genome()
+
+    def setUp(self):
+        this._decoder.set_genome(this._genome)
+        self._creature = this._decoder.read_genome()
+
+    def test1(self):
+        self._creature.describe()
+        # Ensure at least 1 organ was found.
+        self.assertTrue(len(self._creature.get_organs()) > 0)
 
 if __name__ == '__main__':
     unittest.main()
