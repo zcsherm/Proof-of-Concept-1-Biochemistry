@@ -54,3 +54,11 @@ class Body:
         except:
             print("\n!!!!!! An error occured !!!! An invalid chemical was removed from the body the body\n")
             return
+
+    def describe(self):
+        for organ in self._organs:
+            organ.describe()
+
+    def status(self):
+        for organ in self._organs:
+            organ.status()
