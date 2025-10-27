@@ -12,6 +12,9 @@ class Organ:
         self._health = 1
         self._parameters = []
 
+    def get_id(self):
+        return self._id
+
 class InternalOrgan(Organ):
     """
     Internal organs focus on managing bloodstream and chemicals
