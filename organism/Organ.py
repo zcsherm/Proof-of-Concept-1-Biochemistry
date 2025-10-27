@@ -26,7 +26,7 @@ class InternalOrgan(Organ):
         self._health = val
         self._health_receptors = []
         self._parameters.append(('health', self._health))
-
+    
     def set_act_rate(self, act_rate):
         """
         Determines how often this organ is activated
@@ -40,6 +40,10 @@ class InternalOrgan(Organ):
         self._reaction_rate_receptors = []
         self._parameters.append(('reaction rate', self._reaction_rate))
 
+
+    def debug_set_health(self, val):
+        self._health = max(min(val,1),0)
+        
     def get_param_numbers(self):
         return len(self._parameters)
 
