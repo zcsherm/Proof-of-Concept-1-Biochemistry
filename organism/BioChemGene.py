@@ -86,12 +86,12 @@ class Receptor(BioChemGene):
         """
         Outputs all atttributes of the gene in an easy to read manner
         """
-        s1 = f"Gene {self._id}:"
-        s2 = f"\t This gene monitors for chemical {self._chemical}. Based on the concentration it adjusts {self._param_name}."
-        s3 = f"\t\t Organ parameter: {self._param_name}"
-        s4 = f"\t\t Activation function: f{self._func_name}"
-        s5 = f"\t\t Chemical read: {self._chemical}"
-        s6 = f"\t\t Example: Chemical at .1 produces {self._activation_function(.1)}, Chemical at .5 produces {self._activation_function(.5)},  Chemical at .9 produces {self._activation_function(.9)}"
+        s1 = f"\t\tGene {self._id}:"
+        s2 = f"\t\t\t This gene monitors for chemical {self._chemical}. Based on the concentration it adjusts {self._param_name}."
+        s3 = f"\t\t\t\t Organ parameter: {self._param_name}"
+        s4 = f"\t\t\t\t Activation function: f{self._func_name}"
+        s5 = f"\t\t\t\t Chemical read: {self._chemical}"
+        s6 = f"\t\t\t\t Example: Chemical at .1 produces {self._activation_function(.1)}, Chemical at .5 produces {self._activation_function(.5)},  Chemical at .9 produces {self._activation_function(.9)}"
         print(s1,s2,s3,s4,s5,s6)
 
 class Emitter(BioChemGene):
@@ -127,11 +127,11 @@ class Emitter(BioChemGene):
         """
         Outputs all atttributes of the gene in an easy to read manner
         """
-        s1 = f"Gene {self._id}:"
-        s2 = f"\t This gene monitors the organ's {self._param_name}. Based on the rate it releases chemical {self._chemical}."
-        s3 = f"\t\t Organ parameter: {self._param_name}"
-        s4 = f"\t\t Activation function: f{self._func_name}"
-        s5 = f"\t\t Chemical output: {self._chemical}"
-        s7 = f"\t\t Output rate: {self._rate}"
-        s6 = f"\t\t Example: {self._param_name} at .1 produces {self._activation_function(.1)*self._rate} units of {self._chemical}, {self._param_name} at .5 produces {self._activation_function(.5)*self._rate} units of {self._chemical},  {self._param_name} at .9 produces {self._activation_function(.9)*self._rate} units of {self._chemical}"
+        s1 = f"\t\tGene {self._id}:"
+        s2 = f"\t\t\t This gene monitors the organ's {self._param_name}. Based on the rate it releases chemical {self._chemical}."
+        s3 = f"\t\t\t\t Organ parameter: {self._param_name}"
+        s4 = f"\t\t\t\t Activation function: f{self._func_name}"
+        s5 = f"\t\t\t\t Chemical output: {self._chemical}"
+        s7 = f"\t\t\t\t Output rate: {self._rate}"
+        s6 = f"\t\t\t\t Example: {self._param_name} at .1 produces {self._activation_function(.1)*self._rate} units of {self._chemical}, {self._param_name} at .5 produces {self._activation_function(.5)*self._rate} units of {self._chemical},  {self._param_name} at .9 produces {self._activation_function(.9)*self._rate} units of {self._chemical}"
         print(s1,s2,s3,s4,s5,s7,s6)
