@@ -31,6 +31,34 @@ def generate_genome(length=400):
     for i in range(length):
         bits += random.choice([b'0',b'1'])
     return bits
+
+def analyze_organism(organism):
+    data = {"Organ Count":0, "Gene Count":0, "Organs": dict(), "Average Genes per Organ": 0} 
+    organ_count = 0
+    gene_count = 0
+    organs = organism.get_organs()
+    organ_count = len(organs)
+    for organ in organs:
+        organ_data = dict()
+        emit_count = 0
+        recept_count = 0
+        organ_data = {}
+        genes = organ.get_genes()
+        organ_data['Number of genes']= len(genes)
+        for gene in genes:
+            gene_count += 1
+            if gene.get_type() == 'receptor':
+                recept_count += 1
+            elif gene.get_type() == 'emitter':
+                emit_count += 1
+        organ_data['Emitter Count'] = emit_count
+        organ_data['Receptor Count'] = recept_count
+        data["Organs"][organ.get_id()]=organ_data
+    data["Gene Count"] = gene_count
+    data["Average Genes per Organ"] = gene_count/len(organs)
+    return data
+
+
 """
 Add more functions or trim? Maybe give each one 2 bytecodes, but some only have 1?
 """
