@@ -55,6 +55,9 @@ class Body:
             print("\n!!!!!! An error occured !!!! An invalid chemical was removed from the body the body\n")
             return
 
+    def get_organs(self):
+        return self._organs
+
     def describe(self):
         print(f"Creature {self._id):"
         for organ in self._organs:
