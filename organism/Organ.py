@@ -10,6 +10,7 @@ class Organ:
         self._id = generate_id()
         self._owner = owner
         self._health = 1
+        self._parameters = []
 
 class InternalOrgan(Organ):
     """
@@ -24,6 +25,7 @@ class InternalOrgan(Organ):
         """
         self._health = val
         self._health_receptors = []
+        self._parameters.append(('health', self._health))
 
     def set_act_rate(self, act_rate):
         """
@@ -31,10 +33,18 @@ class InternalOrgan(Organ):
         """
         self._act_rate = act_rate
         self._act_rate_receptors = []
+        self._parameters.append(('activation rate', self._act_rate))
 
     def set_reaction_rate(self, rate):
         self._reaction_rate = rate
         self._reaction_rate_receptors = []
+        self._parameters.append(('reaction rate', self._reaction_rate))
+
+    def get_param_numbers(self):
+        return len(self._parameters)
+
+    def get_param_at_index(self, index):
+        return self._parameters[index]
 
     def read_health_from_gene(self, output):
         """
