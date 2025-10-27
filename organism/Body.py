@@ -59,7 +59,7 @@ class Body:
         return self._organs
 
     def describe(self):
-        print(f"Creature {self._id):"
+        print(f"Creature {self._id):")
         for organ in self._organs:
             organ.describe()
 
