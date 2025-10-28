@@ -28,7 +28,7 @@ class InternalOrgan(Organ):
         """
         self._health = val
         self._health_receptors = []
-        self._parameters.append(('health', self._health))
+        self._parameters.append(('health', self.health_adjust))
     
     def set_act_rate(self, act_rate):
         """
@@ -36,12 +36,12 @@ class InternalOrgan(Organ):
         """
         self._act_rate = act_rate
         self._act_rate_receptors = []
-        self._parameters.append(('activation rate', self._act_rate))
+        self._parameters.append(('activation rate', self.act_rate_adjust))
 
     def set_reaction_rate(self, rate):
         self._reaction_rate = rate
         self._reaction_rate_receptors = []
-        self._parameters.append(('reaction rate', self._reaction_rate))
+        self._parameters.append(('reaction rate', self.reaction_rate_adjust))
 
     def get_genes(self):
         return self._genes
@@ -82,7 +82,16 @@ class InternalOrgan(Organ):
             
     def release_chemical(self, chemical, amount):
         self._owner.add_chemical(chemical, amount)
-        
+
+    def health_adjust(self, value):
+        self._health_receptors.append(value)
+
+    def act_rate_adjust(self, value):
+        self._health_receptors.append(value)
+
+    def reaction_rate_adjust(self, value):
+        self._health_receptors.append(value)
+    
     def get_health(self):
         return self._health
 
@@ -100,16 +109,22 @@ class InternalOrgan(Organ):
         
     def activate_organ(self):
         for gene in self._genes:
-            type = gene.get_type()
-            if type == 'receptor':
-                gene.adjust_parameter()
-            elif type == 'emitter':
-                gene.release_chemical()
+            self.activate_gene(gene)
+        self.update_params()
+    
+    def activate_gene(self, gene):
+        type = gene.get_type()
+        if type == 'receptor':
+            gene.adjust_parameter()
+        elif type == 'emitter':
+            gene.release_chemical()
+
+    def update_params(self):
         self._reaction_rate = sum(self._reaction_rate_receptors) / max(len(self._reaction_rate_receptors),1)
         self._act_rate = sum(self._act_rate_receptors) / max(len(self._act_rate_receptors), 1)
         average_health_change = sum(self._health_receptors) / max(len(self._health_receptors), 1)
         self._health = health_decay(self._health, average_health_change)
-
+        
     def describe(self):
         """
         Provide a readout on all aspects of the organ, including parameters and genes
