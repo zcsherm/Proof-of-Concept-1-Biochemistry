@@ -86,12 +86,12 @@ class Receptor(BioChemGene):
         """
         Outputs all atttributes of the gene in an easy to read manner
         """
-        s1 = f"\t\tGene {self._id}:"
-        s2 = f"\t\t\t This gene monitors for chemical {self._chemical}. Based on the concentration it adjusts {self._param_name}."
-        s3 = f"\t\t\t\t Organ parameter: {self._param_name}"
-        s4 = f"\t\t\t\t Activation function: f{self._func_name}"
-        s5 = f"\t\t\t\t Chemical read: {self._chemical}"
-        s6 = f"\t\t\t\t Example: Chemical at .1 produces {self._activation_function(.1)}, Chemical at .5 produces {self._activation_function(.5)},  Chemical at .9 produces {self._activation_function(.9)}"
+        s1 = f"\t\tGene {self._id}:\n"
+        s2 = f"\t\t\t This gene monitors for chemical {self._chemical}. Based on the concentration it adjusts {self._param_name}.\n"
+        s3 = f"\t\t\t\t Organ parameter: {self._param_name}\n"
+        s4 = f"\t\t\t\t Activation function: f{self._func_name}\n"
+        s5 = f"\t\t\t\t Chemical read: {self._chemical}\n"
+        s6 = f"\t\t\t\t Example: Chemical at .1 produces {self._activation_function(.1)}, Chemical at .5 produces {self._activation_function(.5)},  Chemical at .9 produces {self._activation_function(.9)}\n"
         print(s1,s2,s3,s4,s5,s6)
 
 class Emitter(BioChemGene):
@@ -99,11 +99,12 @@ class Emitter(BioChemGene):
     Reads a parameter from the host organ, and outputs a specific chemical with a strength modified by organ health
     """
 
-    def set_parameter(self, name):
+    def set_parameter(self, name, parameter):
         """
         Sets the organs attribute to monitor
         """
         self._param_name = name
+        self._parameter = parameter
 
     def set_chemical(self, chemical):
         self._chemical = chemical
@@ -115,7 +116,7 @@ class Emitter(BioChemGene):
         self._rate = (rate+1)/5
 
     def read_param(self):
-        return self._organ.get_parameter(self.parameter_name)
+        return self._organ.get_parameter(self._param_name)
 
     def get_output_amt(self):
         return self._activation_function(self.read_param()) * self._rate
@@ -127,11 +128,11 @@ class Emitter(BioChemGene):
         """
         Outputs all atttributes of the gene in an easy to read manner
         """
-        s1 = f"\t\tGene {self._id}:"
-        s2 = f"\t\t\t This gene monitors the organ's {self._param_name}. Based on the rate it releases chemical {self._chemical}."
-        s3 = f"\t\t\t\t Organ parameter: {self._param_name}"
-        s4 = f"\t\t\t\t Activation function: f{self._func_name}"
-        s5 = f"\t\t\t\t Chemical output: {self._chemical}"
-        s7 = f"\t\t\t\t Output rate: {self._rate}"
-        s6 = f"\t\t\t\t Example: {self._param_name} at .1 produces {self._activation_function(.1)*self._rate} units of {self._chemical}, {self._param_name} at .5 produces {self._activation_function(.5)*self._rate} units of {self._chemical},  {self._param_name} at .9 produces {self._activation_function(.9)*self._rate} units of {self._chemical}"
+        s1 = f"\t\tGene {self._id}:\n"
+        s2 = f"\t\t\t This gene monitors the organ's {self._param_name}. Based on the rate it releases chemical {self._chemical}.\n"
+        s3 = f"\t\t\t\t Organ parameter: {self._param_name}\n"
+        s4 = f"\t\t\t\t Activation function: f{self._func_name}\n"
+        s5 = f"\t\t\t\t Chemical output: {self._chemical}\n"
+        s7 = f"\t\t\t\t Output rate: {self._rate}\n"
+        s6 = f"\t\t\t\t Example: {self._param_name} at .1 produces {self._activation_function(.1)*self._rate} units of {self._chemical}, {self._param_name} at .5 produces {self._activation_function(.5)*self._rate} units of {self._chemical},  {self._param_name} at .9 produces {self._activation_function(.9)*self._rate} units of {self._chemical}\n"
         print(s1,s2,s3,s4,s5,s7,s6)

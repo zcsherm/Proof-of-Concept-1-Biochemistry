@@ -38,6 +38,7 @@ def analyze_organism(organism):
     gene_count = 0
     organs = organism.get_organs()
     organ_count = len(organs)
+    data["Organ Count"]= organ_count
     for organ in organs:
         organ_data = dict()
         emit_count = 0
@@ -55,7 +56,7 @@ def analyze_organism(organism):
         organ_data['Receptor Count'] = recept_count
         data["Organs"][organ.get_id()]=organ_data
     data["Gene Count"] = gene_count
-    data["Average Genes per Organ"] = gene_count/len(organs)
+    data["Average Genes per Organ"] = gene_count/max(len(organs),1)
     return data
 
 
@@ -64,8 +65,7 @@ Add more functions or trim? Maybe give each one 2 bytecodes, but some only have 
 """
 
 func_names = ['linear', 'inverse linear', 'exponential', 'inverse exponential', 'radical', 'inverse radical', 'sigmoid', 'inverse sigmoid', 'negative square root']
-bits_needed = [(), (), (4), (4), (4), (4), (7,7), (7,7), (7,7)]
-functions  = [linear, inverse_linear, exponential, inverse_exponential, radical, inverse_radical, sigmoid, reverse_sigmoid, reverse_square]
+bits_needed = [tuple(), tuple(), (4,), (4,), (4,), (4,), (7,7), (7,7), (7,7)]
 
 def linear():
     def linear_func(x):
@@ -108,13 +108,13 @@ def sigmoid(coefficient, mean):
     Coefficient is 1 to 128
     Mean is 0-1 maybe 1/(1 to 128) to avoid IEEE754
     """
-    mean = 1/(1+mean)
+    mean = mean
     def sig(x):
         return 1 / (1 + math.e ** ((coefficient * x * -1) + (mean/128 * coefficient)))
     return sig
 
 def reverse_sigmoid(coefficient, mean):
-    mean = 1/(1+mean)
+    mean = mean
     func = sigmoid(coefficient, mean)
     def sig(x):
         return (-1*func(x) + 1)
@@ -161,3 +161,5 @@ def health_decay(health, param):
             return terrace(1-V,b)
 
     return terrace(param, health)
+
+functions  = [linear, inverse_linear, exponential, inverse_exponential, radical, inverse_radical, sigmoid, reverse_sigmoid, reverse_square]

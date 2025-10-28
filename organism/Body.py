@@ -26,11 +26,11 @@ class Body:
 
     def calc_concentrations(self):
         total = 0
-        for key, val in self._chems:
+        for key, val in self._chems.items():
             total += val
         if total == 0:
             total = 1
-        self._concentrations = {chem: val/total for chem, val in self._chems}
+        self._concentrations = {chem: val/total for chem, val in self._chems.items()}
 
     def get_concentration(self, chemical):
         try:
@@ -38,6 +38,9 @@ class Body:
         except:
             print("\n!!!!!! An error occured !!!! An invalid chemical was requested!\n")
             return 0
+
+    def get_chemical(self,chemical):
+        return self._chems[chemical]
 
     def add_chemical(self, chemical, amount):
         try:
@@ -59,13 +62,13 @@ class Body:
         return self._organs
 
     def describe(self):
-        print(f"Creature {self._id):")
+        print(f"Creature {self._id}:")
         for organ in self._organs:
             organ.describe()
 
     def status(self):
-        print(f"Creature {self._id):")
-        for chemical in Chemical.CHEMS:
-            print(f"Chemical {chemical} -- units: {self._chems{chemical}, concentrations: {self._concentrations{chemical}}"
+        print(f"Creature {self._id}:\n")
+        for chemical in Chemicals.CHEMS:
+            print(f"Chemical {chemical} -- units: {self._chems[chemical]}, concentrations: {self._concentrations[chemical]}\n")
         for organ in self._organs:
             organ.status()

@@ -81,7 +81,6 @@ class InternalOrgan(Organ):
             return self._reaction_rate
             
     def release_chemical(self, chemical, amount):
-        amount *= self._health
         self._owner.add_chemical(chemical, amount)
         
     def get_health(self):
@@ -96,7 +95,7 @@ class InternalOrgan(Organ):
     def get_concentration(self, chemical):
         return self._owner.get_concentration(chemical)
         
-    def get_param_adjust(self, gene=>Receptor):
+    def get_param_adjust(self, gene):
         return gene.adjust_parameter()
         
     def activate_organ(self):
@@ -115,16 +114,17 @@ class InternalOrgan(Organ):
         """
         Provide a readout on all aspects of the organ, including parameters and genes
         """
-        s1 = f"Organ {self._id}:"
-        s2 = f"\t This organ has Health: {self._health}, Activation Rate: {self._act_rate}, Reaction Rate: {self._reaction_rate}"
-        s3 = f"\t This organ has {len(self._genes)} genes:"
+        s1 = f"Organ {self._id}:\n"
+        s2 = f"\t This organ has Health: {self._health}, Activation Rate: {self._act_rate}, Reaction Rate: {self._reaction_rate}\n"
+        s3 = f"\t This organ has {len(self._genes)} genes:\n"
         print(s1, s2, s3)
         for gene in self._genes:
             gene.describe()
 
+
     def status(self):
-        s1 = f"Organ{self._id}"
-        s2 = f"Health: {self._health}"
-        s3 = f"Activation Rate: {self._act_rate}"
-        s4 = f"Reaction Rate: {self._reaction_rate}"
+        s1 = f"Organ{self._id}\n"
+        s2 = f"Health: {self._health}\n"
+        s3 = f"Activation Rate: {self._act_rate}\n"
+        s4 = f"Reaction Rate: {self._reaction_rate}\n"
         print(s1, s2, s3, s4)
