@@ -59,6 +59,11 @@ def analyze_organism(organism):
     data["Average Genes per Organ"] = gene_count/max(len(organs),1)
     return data
 
+def analyze_organs(organism):
+    vals = []
+    for organ in organism.get_organs():
+        vals.append(len(organ.get_genes()))
+    return vals
 
 """
 Add more functions or trim? Maybe give each one 2 bytecodes, but some only have 1?
