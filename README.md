@@ -61,11 +61,13 @@ The final part of this phase focuses on breeding populations. We plan to take 20
 * Incrementing or decrementing each reading frame, maybe chance for bit flipping
   * This sounds promising. Allows for structure and phenotype to be relatively conserved. Supports contiguous byte codes (having similar codes clustered around each other, so incrementing or decrementing has minor change).
 * Mutation with preservation of genome. A bit flip that adds a structure or causes future reading frame to adjust, adds or removes bits to maintain future structure.
+* On/off of a gene (still preserved, but simply is not expressed, further mutations or recombos may reactivate it)
 * System analogous to reality
   * Point mutations (silent -> need redundancy, missense -> changing parameters, nonsense-> Breaks reading frame)
   * Insertions (Retrotransposition -> Copy whole Gene or Organ structure and paste elsewhere in genome (preferably non-coding section), frameshift -> small insertions (how to not messup whole genome? Add sync markers on genome to resync reading frame? Chromosomes?), insertions equivalent in size to framesize (5))
   * Deletions (Entire genes or organs, single bits, groups of reading frame bits to preserve order)
   * Inversion (cut and reverse sections of genome)
+  * Translocations
 * Meioisis and crossovers occur at varying rates accros genomes (higher in non-coding sections, odds increase with distance since last crossover) and must occur where reading frame reads the same value (prevents mutations)
 
 ## Stage 3
