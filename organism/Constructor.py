@@ -7,8 +7,8 @@ from utilities import *
 
 GENE_READ_LENGTH = 4
 GENE_TYPES = 2
-GENE_START = b'11010'
-ORGAN_START = b'11111'
+GENE_OPCODES = [0b11010]
+ORGAN_OPCODES = [0b11111]
 
 class Decoder:
 
@@ -75,11 +75,11 @@ class Decoder:
         while self._current_pos < len(self._genome) - 5:
             read_val = self.read_at_pos()
             # If the gene start code was encountered begin constructing a gene
-            if read_val == 0b11010 and self._current_organ is not None:
+            if read_val in GENE_OPCODES and self._current_organ is not None:
                 self.read_gene_data()
 
             # If the organ start code was encountered, begin constructing an organ
-            if read_val == 0b11111:
+            if read_val in ORGAN_OPCODES:
                 self.read_organ_data()
 
         # Finalize the organism and return it when complete.
