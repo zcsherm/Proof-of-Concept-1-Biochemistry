@@ -156,10 +156,10 @@ class SecondTest(unittest.TestCase):
         Now run this for 600,800,1000 bits
         """
         df = pd.DataFrame()
-        for i in range(1200, 1200, 200):
+        for i in range(1200, 1201, 200):
             datum = []
-            for i in range(100):
-                rand_genes=generate_genome()
+            for j in range(100):
+                rand_genes=generate_genome(i)
                 self._decoder.set_genome(rand_genes)
                 new_creature = self._decoder.read_genome()
                 datum.append(analyze_organism(new_creature))
