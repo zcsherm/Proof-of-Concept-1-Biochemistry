@@ -54,6 +54,20 @@ The third part focuses on cumulative effect of mutation. Given a particular geno
 
 The final part of this phase focuses on breeding populations. We plan to take 20 copies of a single genome and produce many offspring with random pairs of parents. Then 20 offspring are chosen to reproduce, and this is repeated for many generations. This should help us understand cross-over mutations that occur during reproduction, as well as the overall genetic drift the system allows and affords.
 
+#### Proposed mutation systems
+* Random bit flipping, equal weight across all bits in genome
+* Mutations occuring only on structures (new organs and genes must be duplicated from existing ones)
+* Bit flipping, but weighted more heavily on parameters (to preven drastic changes to phenotype)
+* Incrementing or decrementing each reading frame, maybe chance for bit flipping
+  * This sounds promising. Allows for structure and phenotype to be relatively conserved. Supports contiguous byte codes (having similar codes clustered around each other, so incrementing or decrementing has minor change).
+* Mutation with preservation of genome. A bit flip that adds a structure or causes future reading frame to adjust, adds or removes bits to maintain future structure.
+* System analogous to reality
+  * Point mutations (silent -> need redundancy, missense -> changing parameters, nonsense-> Breaks reading frame)
+  * Insertions (Retrotransposition -> Copy whole Gene or Organ structure and paste elsewhere in genome (preferably non-coding section), frameshift -> small insertions (how to not messup whole genome? Add sync markers on genome to resync reading frame? Chromosomes?), insertions equivalent in size to framesize (5))
+  * Deletions (Entire genes or organs, single bits, groups of reading frame bits to preserve order)
+  * Inversion (cut and reverse sections of genome)
+* Meioisis and crossovers occur at varying rates accros genomes (higher in non-coding sections, odds increase with distance since last crossover) and must occur where reading frame reads the same value (prevents mutations)
+
 ## Stage 3
 
 The final stage of testing aims to see if random genomes can actually produce a creature that is capable of surviving in a simulation.
@@ -61,3 +75,12 @@ The final stage of testing aims to see if random genomes can actually produce a 
 #### Genetic Search
 
 This test is focused on using the creature structure in a genetic search algorithm to find an optimal survival chance. We've constructed a simple 2D environment that populates cells with food. A large number of random genomes are created and dropped into the grid. From this large population, we can take the organisms that were able to survive the longest and produce a subsequent generation. This is to be repeated a number of times and the metrics on the fitness function can be analyzed. We hope to see a continual improvement in fitness among generations. Repeating this several times should show considerable differentiation between successful genomes. Additionally, we may also see some cracks start to show, as organisms take advantage of mistakes in implementation, such as an organism discovering how to become biologically immortal or how to violate the laws of thermodynamics.
+
+# Findings
+
+## Stage 1
+
+10/27
+Testing revealed that Genes and Organs occured at a roughly similar rate (which was expected), however distribution of genes to organs varied. A 1200 bit genome produced an average of 5-6 organs with 4-5 genes total. Some genomes had as many as 12 organs, most of which were vestigial with no genes. 
+
+We would like to see more genes being produced per organ. Further tests should add additional operations for decoding genes perhaps 5 contiguous 5bit opcodes. This would increase the odds of a gene being produced to about 1/6, while also decreasing the number of organs (due to each gene occupying more than 5 bits of genome space.
