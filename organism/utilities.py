@@ -64,6 +64,12 @@ def analyze_organs(organism, list):
         list.append(len(organ.get_genes()))
     return list
 
+def bit_flip(binary_val, position):
+    """
+    position should be 0 indexed from start of binary string, with the first bit on the left at pos 0
+    """
+    return binary_val ^= (1 << (binary_val.bit_length()-pos)
+
 """
 Add more functions or trim? Maybe give each one 2 bytecodes, but some only have 1?
 """
