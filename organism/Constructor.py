@@ -119,7 +119,6 @@ class Decoder:
         func = int(self.read_at_pos(length = 3))
         func_name = func_names[func]
         func_read_lengths = bits_needed[func]
-        print(func_read_lengths)
         params = []
         # If the function needs parameters, then read each one as needed
         for param in func_read_lengths:

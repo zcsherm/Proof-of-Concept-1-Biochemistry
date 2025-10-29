@@ -6,6 +6,7 @@ import pandas as pd
 import seaborn as sb
 import matplotlib.pyplot as plt
 from utilities import *
+import Constructor
 from Constructor import Decoder, GENE_OPCODES, ORGAN_OPCODES
 
 ORGAN_START = b'11111'
@@ -168,7 +169,7 @@ class SecondTest(unittest.TestCase):
         Setup the decoder and generate a random genome
         """
         random.seed(SEED) # replace seed with None for truly random results
-        print(\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~ SECOND TEST ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n")
+        print("\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~ SECOND TEST ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n")
         cls._decoder = Decoder()
         cls._genome = generate_genome()
         print(f"This was the random genome for SecondTest: \n{cls._genome}\n")
@@ -203,14 +204,11 @@ class SecondTest(unittest.TestCase):
             new_creature = self._decoder.read_genome()
             # Get various metrics from the organism
             datum.append(analyze_organism(new_creature))
-            vals = analyze_organs(new_creature)
-            for val in vals:
-                organ_datum.append(vals)
+            organ_datum = analyze_organs(new_creature, organ_datum)
 
         # create dataframes for graphing
         df = pd.DataFrame(original_data)
-        organ_df = pd.DataFrame()
-        organ_df['Organ Count'] = organ_datum
+        organ_df = pd.DataFrame(organ_datum, columns=['Organ Count'])
         
         # fit each dictionary in datum to the dataframe 
         for row in datum:
@@ -234,13 +232,14 @@ class SecondTest(unittest.TestCase):
         df = pd.DataFrame()
         for i in range(1200, 1201, 200):
             datum = []
+            organ_datum = []
             for j in range(100):
                 rand_genes=generate_genome(i)
                 self._decoder.set_genome(rand_genes)
                 new_creature = self._decoder.read_genome()
                 datum.append(analyze_organism(new_creature))
-            organ_df = pd.DataFrame()
-            organ_df['Organ Count'] = organ_datum
+                organ_datum = analyze_organs(new_creature, organ_datum)
+            organ_df = pd.DataFrame(organ_datum, columns=['Organ Count'])
             for row in datum:
                 new_row_df = pd.DataFrame([row])
                 df = pd.concat([df, new_row_df], ignore_index=True)
@@ -248,7 +247,7 @@ class SecondTest(unittest.TestCase):
             plt.show()
             sb.countplot(df, x='Gene Count').set_title("Number of Genes in each organism")
             plt.show()
-            sb.countplot(df, x='Average Genes per Organ').set_title("Average Genes per Organ per Creature")
+            sb.histplot(df, x='Average Genes per Organ').set_title("Average Genes per Organ per Creature")
             plt.show()
             sb.countplot(organ_df, x='Organ Count').set_title("Number of Organs with x genes")
             plt.show()
@@ -263,21 +262,21 @@ class ThirdTest(unittest.TestCase):
         Setup the decoder
         """
         random.seed(SEED) # replace seed with None for truly random results
-        print(\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~ THIRD TEST ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n")
+        print("\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~ THIRD TEST ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n")
         cls._decoder = Decoder()
 
     def test1(self):
         """
         Measure Organ and Gene count against genome length
         """
-        all_data = pd.DataFrame()
-        all_data_genes = pd.DataFrame()
+        all_data = pd.DataFrame([])
+        all_data_genes = pd.DataFrame([])
         for i in range(1200,7200,1200):
-            dfs = decode_x_times(self._decoder, 100, i)
+            val = decode_x_times(self._decoder, 100, i)
             val[0]['Genome Length'] = i
             val[1]['Genome Length'] = i
-            all_data = pd.concat(all_data, val[0], ignore_index=True)
-            all_data_genes = pd.concat(all_data, val[1], ignore_index=True)
+            all_data = pd.concat([all_data, val[0]], ignore_index=True)
+            all_data_genes = pd.concat([all_data_genes, val[1]], ignore_index=True)
         fig, axes = plt.subplots(nrows=2, ncols=4, figsize=(10, 5)) # 1 row, 4 cols
         sb.histplot(all_data, x='Organ Count',hue='Genome Length',multiple='stack', ax = axes[0,0])
         axes[0,0].set_title("Number of Organs in each organism")
@@ -303,18 +302,18 @@ class ThirdTest(unittest.TestCase):
         Measure Organ and Gene count against number of op codes to make a gene in length 1200
         """
         new_ops = [0b11001, 0b11000, 0b10111, 0b10110]
-        tmp = GENE_OPCODES
+        tmp = Constructor.GENE_OPCODES
         all_data = pd.DataFrame()
         all_data_genes = pd.DataFrame()
         for i in range(4):
-            GENE_OPCODES.append(new_ops[i])
-            dfs = decode_x_times(self._decoder, 100, 1200)
+            Constructor.GENE_OPCODES.append(new_ops[i])
+            val = decode_x_times(self._decoder, 100, 1200)
             val[0]['Number of Opcodes']=i+2
             val[1]['Number of Opcodes']=i+2
-            all_data = pd.concat(all_data, val[0], ignore_index=True)
-            all_data_genes = pd.concat(all_data, val[1], ignore_index=True)
+            all_data = pd.concat([all_data, val[0]], ignore_index=True)
+            all_data_genes = pd.concat([all_data_genes, val[1]], ignore_index=True)
         bigplot(all_data, all_data_genes, 'Number of Opcodes')
-        GENE_OPCODES = tmp
+        Constructor.GENE_OPCODES = tmp
         
     def test3(self):
         """
@@ -322,20 +321,20 @@ class ThirdTest(unittest.TestCase):
         """
         fig, axes = plt.subplots(nrows=4, ncols=4, figsize=(10, 5)) # 4rows, 4 cols
         new_ops = [0b11001, 0b11000, 0b10111, 0b10110]
-        tmp = GENE_OPCODES
+        tmp = Constructor.GENE_OPCODES
         all_data = pd.DataFrame()
         all_data_genes = pd.DataFrame()
         for j in range(4):
-            genome_len = 1200 * (i+1)
+            genome_len = 1200 * (j+1)
             for i in range(4):
-                GENE_OPCODES.append(new_ops[i])
-                dfs = decode_x_times(self._decoder, 100, 1200)
+                Constructor.GENE_OPCODES.append(new_ops[i])
+                val = decode_x_times(self._decoder, 100, genome_len)
                 val[0]['Number of Opcodes']=i+2
                 val[1]['Number of Opcodes']=i+2
-                all_data = pd.concat(all_data, val[0], ignore_index=True)
-                all_data_genes = pd.concat(all_data, val[1], ignore_index=True)
-            plot_row(all_data, all_data_genes, 'Number of Opcodes')
-            GENE_OPCODES = tmp
+                all_data = pd.concat([all_data, val[0]], ignore_index=True)
+                all_data_genes = pd.concat([all_data_genes, val[1]], ignore_index=True)
+            plot_row(all_data, all_data_genes, j,axes)
+            Constructor.GENE_OPCODES = tmp
         plt.tight_layout()
         plt.show()
         
@@ -344,27 +343,29 @@ def decode_x_times(decoder, times, genome_length = 400):
     Helper function that generates random genomes x times of length j, returns 2 data sets
     """
     datum = []
+    organ_datum = []
+    df = pd.DataFrame()
     for j in range(times):
         rand_genes=generate_genome(genome_length)
         decoder.set_genome(rand_genes)
         new_creature = decoder.read_genome()
         datum.append(analyze_organism(new_creature))
-    organ_df = pd.DataFrame()
-    organ_df['Organ Count'] = organ_datum
+        organ_datum = analyze_organs(new_creature,organ_datum)
+    organ_df = pd.DataFrame(organ_datum, columns=['Organ Count'])
     for row in datum:
         new_row_df = pd.DataFrame([row])
         df = pd.concat([df, new_row_df], ignore_index=True)
     return df, organ_df
 
-def plot_row(df, df2, col, axes):
-    sb.bocplot(df1, x='Organ Count', ax = axes[col,0])
-    axes[0,0].set_title("Number of Organs in each organism\nGenome len: {(col+1)*1200}  OpCodes: 2")
+def plot_row(df1, df2, col, axes):
+    sb.boxplot(df1, x='Organ Count', ax = axes[col,0])
+    axes[col,0].set_title(f"Number of Organs in each organism\nGenome len: {(col+1)*1200}  OpCodes: 2")
     sb.boxplot(df1, x='Gene Count', ax= axes[col,1])
-    axes[0,1].set_title("Number of Genes in each organism\nGenome len: {(col+1)*1200}  OpCodes: 3")
+    axes[col,1].set_title(f"Number of Genes in each organism\nGenome len: {(col+1)*1200}  OpCodes: 3")
     sb.boxplot(df1, x='Average Genes per Organ', ax = axes[col,2])
-    axes[0,2].set_title("Average number of Genes per organ in each organism\nGenome len: {(col+1)*1200}  OpCodes: 4")
-    sb.boxplot(df2, x='Organ Count', ax = axes[col,3])
-    axes[0,3].set_title("Number of organs with x Genes\nGenome len: {(col+1)*1200}  OpCodes: 5")
+    axes[col,2].set_title(f"Average number of Genes per organ in each organism\nGenome len: {(col+1)*1200}  OpCodes: 4")
+    sb.histplot(df2, x='Organ Count', ax = axes[col,3])
+    axes[col,3].set_title(f"Number of organs with x Genes\nGenome len: {(col+1)*1200}  OpCodes: 5")
 
 def bigplot(df1, df2, hue_col):
     fig, axes = plt.subplots(nrows=2, ncols=4, figsize=(10, 5)) # 1 row, 4 cols
