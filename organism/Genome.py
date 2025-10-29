@@ -16,16 +16,16 @@ class Node:
         """
         Return the entire genome for this structure
         """
-        return bytes(self._start[1:] + bytes(self._params[1:]) + bytes(self._noncoding[1:]))
+        return bytes(self._start)[1:] + bytes(self._params)[1:] + bytes(self._noncoding)[1:]
 
     def set_start(self, start):
-        self._start = bin(1+start)
+        self._start = bin(b'1'+start)
 
     def set_params(self, params):
-        self._params = bin(1+params)
+        self._params = bin(b'1'+params)
 
     def set_noncoding(self, noncoding):
-        self._noncoding = bin(1+noncoding)
+        self._noncoding = bin(b'1'+noncoding)
 
     def get_start(self):
         return bytes(self._start)
