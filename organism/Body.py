@@ -59,6 +59,9 @@ class Body:
             print("\n!!!!!! An error occured !!!! An invalid chemical was removed from the body the body\n")
             return
 
+    def get_genome(self):
+        return self._genome
+        
     def get_organs(self):
         return self._organs
 
