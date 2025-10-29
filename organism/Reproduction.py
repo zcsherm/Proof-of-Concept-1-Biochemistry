@@ -8,6 +8,8 @@ import random
 
 MUTATION_RATE = .01
 
+# Genome parsing - possible combine this with decoder, that would mean genome is read once. Maybe having the Genome parsed into a directed graph would be easier?
+
 # PARTHENOGENIC METHODS
 def random_bit_flip(organism, mutation_rate = MUTATION_RATE):
     """
