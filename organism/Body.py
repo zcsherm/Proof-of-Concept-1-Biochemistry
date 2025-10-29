@@ -8,11 +8,12 @@ import random
 
 class Body:
 
-    def __init__(self):
+    def __init__(self, genome=None):
         self._id = generate_id()
         self._chems = {chem: 0 for chem in Chemicals.CHEMS}
         self._concentrations = {chem: 0 for chem in Chemicals.CHEMS}
         self._organs = []
+        self._genome = genome
         
     def add_organ(self, organ):
         self._organs.append(organ)
