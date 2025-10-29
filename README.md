@@ -83,6 +83,16 @@ This test is focused on using the creature structure in a genetic search algorit
 ## Stage 1
 
 10/27
+
 Testing revealed that Genes and Organs occured at a roughly similar rate (which was expected), however distribution of genes to organs varied. A 1200 bit genome produced an average of 5-6 organs with 4-5 genes total. Some genomes had as many as 12 organs, most of which were vestigial with no genes. 
 
 We would like to see more genes being produced per organ. Further tests should add additional operations for decoding genes perhaps 5 contiguous 5bit opcodes. This would increase the odds of a gene being produced to about 1/6, while also decreasing the number of organs (due to each gene occupying more than 5 bits of genome space.
+
+10/28
+
+Further testing showed that gene quantity per organ was relatively constant, even as genome length and gene opcodes increased. 
+
+This makes sense in hindsight, since the average length between Organ opcodes doesn't change with these and this limits the number of genes possible. Possible solutions may be to: 
+* increase the reading frame size, increasing the length between organs.
+* Requiring 2 consecutive Organ opcodes to construct an organ (may be too drastic? Effectively causes 1/1000 chance of an organ.)
+* Leave it for now, allow the number of genes in an organ to increase through Insertion, Duplication, etc.   
