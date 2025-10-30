@@ -96,3 +96,13 @@ This makes sense in hindsight, since the average length between Organ opcodes do
 * increase the reading frame size, increasing the length between organs.
 * Requiring 2 consecutive Organ opcodes to construct an organ (may be too drastic? Effectively causes 1/1000 chance of an organ.)
 * Leave it for now, allow the number of genes in an organ to increase through Insertion, Duplication, etc.   
+
+10/29-30
+
+Exploration into mutation system revealed that keeping DNA as a binary string is very limitting. 
+
+In response, I changed the DNA format into a singly linked list, where each structure is a node with the strand separated into the header, the parameters, and all junk DNA. This should help enable us to weight mutations and more easily affect whole structures.
+
+Additionally I added the gene for causing a chemical reaction. This should turn creatures into more robust specimens.
+
+Finally, this refactoring and reworking necessitated new unit tests.
