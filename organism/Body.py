@@ -14,6 +14,7 @@ class Body:
         self._concentrations = {chem: 0 for chem in Chemicals.CHEMS}
         self._organs = []
         self._genome = genome
+        self._dna_head = None
         
     def add_organ(self, organ):
         self._organs.append(organ)
@@ -60,7 +61,9 @@ class Body:
             return
 
     def get_genome(self):
-        return self._genome
+        if self._dna_head is None:
+            return self._genome
+        return self._dna_head.get_entire_genome()
         
     def get_organs(self):
         return self._organs
