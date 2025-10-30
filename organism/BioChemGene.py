@@ -164,6 +164,9 @@ class Reaction(BioChemGene):
         """
         self._chems = list
 
+    def get_equation_params(self):
+        return (self._num_of_chems_left, self._num_of_chems_right)
+        
     def check_for_requirements(self):
         for i in range(self._num_of_chems_left):
             chem = self._chems[i]
