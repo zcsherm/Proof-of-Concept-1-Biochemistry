@@ -7,7 +7,7 @@ from Genome import *
 from utilities import *
 
 GENE_READ_LENGTH = 4
-GENE_TYPES = 2
+GENE_TYPES = 3
 GENE_OPCODES = [0b11010]
 ORGAN_OPCODES = [0b11111]
 NORMAL_READ_LENGTH = 5 # Probably change to 8
@@ -109,12 +109,17 @@ class Decoder:
         Constructs a gene (currently only 2 types (emitter, and receptor))) and gets parameters for it.
         """
         # Find out what type of gene it is
-        type = self.read_at_pos(length = 1)
-        if type == 1:
+        type = self.read_at_pos(length = GENE_READ_LENGTH)
+        if type % GENE_TYPES == 2:
+            # Reaction has weird param reqs and its easier to branch out.
+            self._current_gene = Reaction(self._current_organ, 'reaction')
+            self.read_reaction_data()
+            return
+        elif type % GENE_TYPES == 1:
             self._current_gene = Emitter(self._current_organ, 'emitter')
             rate = self.read_at_pos()
             self._current_gene.set_output_rate(int(rate))
-        elif type == 0:
+        elif type % GENE_TYPES == 0:
             self._current_gene = Receptor(self._current_organ, 'receptor')
         
         # Now parse the function this gene uses. Each function needs different parameters
@@ -138,8 +143,21 @@ class Decoder:
         val = int(self.read_at_pos(length = 4))
         self._current_gene.set_chemical(val)
         self._current_organ.add_gene(self._current_gene)
-        
 
+    def read_reaction_data(self):
+        # Get left params
+        left = int(self.read_at_pos(length = 1))
+        right = int(self.read_at_pos(length = 4))
+        self._current_gene.set_num_of_chems_left(left)
+        self._current_gene.set_num_of_chems_right(right)
+        chems = []
+        for i in range((left % 2) + 1 + (right % 3):
+            val = self.read_at_pos(length = 6)
+            chem = self.read_at_pos(length = 4)
+            chems.append((val,chems))
+        self._current_gene.set_chems_and_coefficients(chems)
+        self._current_organ.add_gene(self._current_gene)
+        
 class DecoderLinkedList:
     """
     A second decoder for when the genome is stored as linked list
@@ -262,14 +280,20 @@ class DecoderLinkedList:
         Constructs a gene (currently only 2 types (emitter, and receptor))) and gets parameters for it.
         """
         # Find out what type of gene it is
-        type = self.read_at_pos(length = 1)
+        type = self.read_at_pos(length = GENE_READ_LENGTH)
         read = type
-        if type == b'1':
+        type = int(type) % GENE_TYPES
+        if type == 2:
+            # It's gonna be easier to separate all the logic into separate functions instead
+            self._current_gene = Reaction(self._current_organ, 'reaction')
+            self._read_reaction_data()
+            return
+        elif type == 1:
             self._current_gene = Emitter(self._current_organ, 'emitter')
             rate = self.read_at_pos()
             read += rate
             self._current_gene.set_output_rate(int(rate))
-        elif type == b'0':
+        elif type == 0:
             self._current_gene = Receptor(self._current_organ, 'receptor')
         
         # Now parse the function this gene uses. Each function needs different parameters
@@ -303,6 +327,23 @@ class DecoderLinkedList:
         self._current_organ.add_gene(self._current_gene)
         self._current_node.set_params(read)
 
+    def read_reaction_data(self):
+        left = self.read_at_pos(length = 4)
+        right = self.read_at_pos(length = 4)
+        read = left+ right
+        self._current_gene.set_num_of_chems_left(int(left))
+        self._current_gene.set_num_of_chems_right(int(right))
+        chems = []
+        for i in range((int(left) % 2) + 1 + (int(right) % 3):
+            val = self.read_at_pos(length = 6)
+            read += val
+            chem = self.read_at_pos(length = 4)
+            read += chem
+            chems.append((val,chems))
+        self._current_gene.set_chems_and_coefficients(chems)
+        self._current_organ.add_gene(self._current_gene)
+        self._current_node.set_params(read)
+        
     def start_new_node(self, type):
         self._current_node.set_noncoding(self._current_read)
         self._current_node.next = Node()
