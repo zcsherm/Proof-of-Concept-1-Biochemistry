@@ -174,14 +174,14 @@ class Reaction(BioChemGene):
         for i in range(self._num_of_chems_left):
             chem = self._chems[i]
             q = self._organ.get_chem_quant(chem[1])
-            if q < (REACTION_MAX+chem[0])/64:
+            if q < chem[0]*(REACTION_MAX)/64:
                 return False
         return True
 
     def react(self):
         for i in range(len(self._chems)):
             chem = self._chems[i]:
-            q = (REACTION_MAX+chem[0])/64
+            q = chem[0]*(REACTION_MAX)/64
             if i < self._num_of_chems_left:
                 self._organ.consume_chemical(chem[1], q)
             else:
