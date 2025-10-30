@@ -10,6 +10,7 @@ GENE_READ_LENGTH = 4
 GENE_TYPES = 2
 GENE_OPCODES = [0b11010]
 ORGAN_OPCODES = [0b11111]
+NORMAL_READ_LENGTH = 5 # Probably change to 8
 
 class Decoder:
 
@@ -49,7 +50,7 @@ class Decoder:
         self._current_gene = None
         return creature
     
-    def read_at_pos(self, pos=None, length = 5):
+    def read_at_pos(self, pos=None, length = NORMAL_READ_LENGTH):
         """
         Reads a section of Binary DNA, at a starting position and with a length
         """
@@ -73,7 +74,7 @@ class Decoder:
         """
         Continually reads the genome, constructing an organism as it goes.
         """
-        while self._current_pos < len(self._genome) - 5:
+        while self._current_pos < len(self._genome) - NORMAL_READ_LENGTH:
             read_val = self.read_at_pos()
             # If the gene start code was encountered begin constructing a gene
             if read_val in GENE_OPCODES and self._current_organ is not None:
@@ -173,9 +174,10 @@ class DecoderLinkedList:
         if self._current_organ is not None:
             if self._current_gene is not None:
                 # self._current_node.set_noncoding(self._current_read) # Is this needed?
+                self._current_node.set_noncoding(self._read)
                 self._current_gene.set_node(self._current_node)
             else:
-                self._current_organ.set_node(self._current_node
+                self._current_organ.set_node(self._current_node)
             self._current_organism.add_organ(self._current_organ)
         creature = self._current_organism
         self._current_organism = Body()
@@ -183,9 +185,10 @@ class DecoderLinkedList:
         self._current_pos = 1
         self._current_organ = None
         self._current_gene = None
+        self._current_node = Node()
         return creature
     
-    def read_at_pos(self, pos=None, length = 5):
+    def read_at_pos(self, pos=None, length = NORMAL_READ_LENGTH):
         """
         Reads a section of Binary DNA, at a starting position and with a length
         """
@@ -214,20 +217,20 @@ class DecoderLinkedList:
         """
         Continually reads the genome, constructing an organism as it goes.
         """
-        while self._current_pos < len(self._genome) - 5:
-            read_val = self.read_at_pos()
-            # If the gene start code was encountered begin constructing a gene
+        while self._current_pos < len(self._genome) - NORMAL_READ_LENGTH:
+            read_val = self.read_at_pos()  # Returns a byte string
+            # If the gene start code was encountered begin constructing a gene, unless no organ exists to house it
             if bin(read_val) in GENE_OPCODES and self._current_organ is not None:
-                self.start_new_node()
-                self._current_node.set_start(read_val)
-                self.read_gene_data()
+                self.start_new_node('gene') # Finish the previously read node, begin a new one
+                self._current_node.set_start(read_val) # Assign the start value
+                self.read_gene_data() # Start reading it
 
             # If the organ start code was encountered, begin constructing an organ
             elif bin(read_val) in ORGAN_OPCODES:
-                self.start_new_node()
+                self.start_new_node('organ')
                 self._current_node.set_start(read_val)
                 self.read_organ_data()
-                self._current_gene = None # This lets vestigial organs or dna that ends in a an organ to process correctly
+                self._current_gene = None # resets the active gene so that we can use this as aflag as well
             else:
                 self._current_read += read_val
         # Finalize the organism and return it when complete.
@@ -241,13 +244,17 @@ class DecoderLinkedList:
         # Assign the current organism the previously active organ
         if self._current_organ is not None:
             self._current_organism.add_organ(self._current_organ)
-
+            
         # Create a new organ and get the parameters.
         self._current_organ = InternalOrgan('internal', self._current_organism)
         self._current_organ.set_def_health()
         val = self.read_at_pos()
+        read = val
         self._current_organ.set_reaction_rate(int(val)/32)
-        self._current_organ.set_act_rate(int(self.read_at_pos())/32)
+        val = self.read_at_pos()
+        read += val
+        self._current_organ.set_act_rate(int(val)/32)
+        self._current_node.set_params(read)
         return
 
     def read_gene_data(self):
@@ -256,21 +263,27 @@ class DecoderLinkedList:
         """
         # Find out what type of gene it is
         type = self.read_at_pos(length = 1)
-        if type == 1:
+        read = type
+        if type == b'1':
             self._current_gene = Emitter(self._current_organ, 'emitter')
             rate = self.read_at_pos()
+            read += rate
             self._current_gene.set_output_rate(int(rate))
-        elif type == 0:
+        elif type == b'0':
             self._current_gene = Receptor(self._current_organ, 'receptor')
         
         # Now parse the function this gene uses. Each function needs different parameters
-        func = int(self.read_at_pos(length = 3))
+        func = self.read_at_pos(length = 3)
+        read += func
+        func = int(func)
         func_name = func_names[func]
         func_read_lengths = bits_needed[func]
         params = []
         # If the function needs parameters, then read each one as needed
         for param in func_read_lengths:
-            params.append(self.read_at_pos(length = param))
+            val = self.read_at_pos(length = param)
+            read += val
+            params.append(int(val)) # Does this need to be an int first?
         if params:
             function = functions[func](*params)
         else:
@@ -278,21 +291,35 @@ class DecoderLinkedList:
         self._current_gene.set_activation(func_name, function)
 
         # Now handle the other parameters of the gene
-        val = int(self.read_at_pos(length = 4) % self._current_organ.get_param_numbers())
+        val = self.read_pos(length = 4)
+        read += val
+        val = int(val) % self._current_organ.get_param_numbers()
         p=  self._current_organ._parameters[val]
         self._current_gene.set_parameter(p[0], p[1])
-        val = int(self.read_at_pos(length = 4))
+        val = self.read_at_pos(length = 4)
+        read += val
+        val = int(val)
         self._current_gene.set_chemical(val)
         self._current_organ.add_gene(self._current_gene)
+        self._current_node.set_params(read)
 
-    def start_new_node(self):
+    def start_new_node(self, type):
         self._current_node.set_noncoding(self._current_read)
         self._current_node.next = Node()
         self._current_read = b''
+        
         if self._current_organ is None:
+            # If organ opcode was encountered but no organ started yet, this is the first node
             self._current_organism.set_dna_head(self._current_node)
-        elif self._current_node is None:
-            self._current_organ.set_dna_head(self._current_node)
+
+        # If organ opcode was encountered and no gene was constructed in the last one, then set this node to the previous organ
+        elif type == 'organ':
+            if self._current_gene is None:
+                self._current_organ.set_dna_head(self._current_node)
+            else:
+                self._current_gene.set_dna_head(self._current_node)
+                
         else:
             self._current_gene.set_dna_head(self._current_node)
+        
         self._current_node = self._current_node.next
