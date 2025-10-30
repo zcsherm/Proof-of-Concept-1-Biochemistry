@@ -12,6 +12,14 @@ class Organ:
         self._health = 1
         self._parameters = []
 
+    def set_dna_head(self, node):
+        self._dna_head = node
+
+    def get_genome(self):
+        if self._dna_head is not None:
+            return self._dna_head.get_entire_genome()
+        return None
+        
     def get_id(self):
         return self._id
 
