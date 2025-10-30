@@ -144,3 +144,63 @@ class Emitter(BioChemGene):
         s7 = f"\t\t\t\t Output rate: {self._rate}\n"
         s6 = f"\t\t\t\t Example: {self._param_name} at .1 produces {self._activation_function(.1)*self._rate} units of {self._chemical}, {self._param_name} at .5 produces {self._activation_function(.5)*self._rate} units of {self._chemical},  {self._param_name} at .9 produces {self._activation_function(.9)*self._rate} units of {self._chemical}\n"
         print(s1,s2,s3,s4,s5,s7,s6)
+
+class Reaction(BioChemGene):
+    """
+    Converts chemicals of one type to another
+    """
+    def set_num_of_chems_left(self, num):
+        """
+        Determines how many chemicals on the left of the equation, 1 or 2
+        """
+        self._num_of_chems_left = (num % 2)+1
+
+    def set_num_of_chems_right(self, num):
+        self._num_of_chems_right = num % 3
+
+    def set_chems_and_coefficients(self, list):
+        """
+        Save the chemicals in the format [(1.43, 13),(2.5, 6)]
+        """
+        self._chems = list
+
+    def check_for_requirements(self):
+        for i in range(self._num_of_chems_left):
+            chem = self._chems[i]
+            q = self._organ.get_chem_quant(chem[1])
+            if q < chem[0]:
+                return False
+        return True
+
+    def react(self):
+        for i in range(len(self._chems)):
+            chem = self._chems[i]:
+            if i < self._num_of_chems_left:
+                self._organ.consume_chemical(chem[1], chem[0])
+            else:
+                self._organ.release_chemical(chem[1], chem[0])
+
+    def describe(self):
+    """
+    Outputs all atttributes of the gene in an easy to read manner
+    """
+        eq = ''
+        for i in range(len(self._chems)):
+            chem = self._chems[i]
+            if i < self._num_of_chems_left:
+                if i == 1:
+                    eq += " + "
+                s = f"{chem[0]}(Chemical {chem[1]})"
+                eq += s
+            else:
+                if i == self._num_of_chems_left:
+                    eq += " = "
+                else:
+                    eq += " + "
+                s = f"{chem[0]}(Chemical {chem[1]})"
+                eq += s
+                
+        s1 = f"\t\tGene {self._id}:\n"
+        s2 = f"\t\t\t This gene performs a chemical reaction.\n"
+        s3 = f"\t\t\t\t Equation: {eq}\n"
+        print(s1,s2,s3)
