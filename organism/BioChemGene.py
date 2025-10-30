@@ -15,6 +15,9 @@ Neuro-indicator: Possibly reads an attribute and links to a neuron in brain?
 Absorption rates:
 Initialcondition: HOw much of a chemical is present at birth, and the cost of reproduction
 """
+
+REACTION_MAX = 4
+
 class BioChemGene:
     def __init__(self, organ, type):
         self._organ = organ
@@ -171,17 +174,18 @@ class Reaction(BioChemGene):
         for i in range(self._num_of_chems_left):
             chem = self._chems[i]
             q = self._organ.get_chem_quant(chem[1])
-            if q < chem[0]:
+            if q < (REACTION_MAX+chem[0])/64:
                 return False
         return True
 
     def react(self):
         for i in range(len(self._chems)):
             chem = self._chems[i]:
+            q = (REACTION_MAX+chem[0])/64
             if i < self._num_of_chems_left:
-                self._organ.consume_chemical(chem[1], chem[0])
+                self._organ.consume_chemical(chem[1], q)
             else:
-                self._organ.release_chemical(chem[1], chem[0])
+                self._organ.release_chemical(chem[1], q)
 
     def describe(self):
     """
