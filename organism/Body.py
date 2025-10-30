@@ -60,6 +60,9 @@ class Body:
             print("\n!!!!!! An error occured !!!! An invalid chemical was removed from the body the body\n")
             return
 
+    def set_dna_head(self, node):
+        self._dna_head = node
+        
     def get_genome(self):
         if self._dna_head is None:
             return self._genome
