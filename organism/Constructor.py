@@ -9,8 +9,12 @@ from utilities import *
 GENE_READ_LENGTH = 4
 GENE_TYPES = 3
 GENE_OPCODES = [0b11010]
+GENE_LOWER_LIMIT = 100
+GENE_UPPER_LIMIT = 120
 ORGAN_OPCODES = [0b11111]
-NORMAL_READ_LENGTH = 5 # Probably change to 8
+ORGAN_LOWER_LIMIT = 200
+ORGAN_UPPER_LIMIT = 204 
+NORMAL_READ_LENGTH = 8 # used to be 5
 
 class Decoder:
 
@@ -50,7 +54,7 @@ class Decoder:
         self._current_gene = None
         return creature
     
-    def read_at_pos(self, pos=None, length = NORMAL_READ_LENGTH):
+    def read_at_pos(self, pos=None, length = 5):
         """
         Reads a section of Binary DNA, at a starting position and with a length
         """
@@ -74,7 +78,7 @@ class Decoder:
         """
         Continually reads the genome, constructing an organism as it goes.
         """
-        while self._current_pos < len(self._genome) - NORMAL_READ_LENGTH:
+        while self._current_pos < len(self._genome) - 5:
             read_val = self.read_at_pos()
             # If the gene start code was encountered begin constructing a gene
             if read_val in GENE_OPCODES and self._current_organ is not None:
@@ -181,8 +185,6 @@ class DecoderLinkedList:
         Sets the active genome. Genome passed should be a byte string of the genome, ideally obtained from the parent.genome_head object
         """
         self._genome = b'1' + genome # prepend a 1 to prevent leading zero discrepensies
-        self._bin_genome = int(genome.decode(),2) # is this necessary?
-        self._leading_zeroes = len(self._genome)-self._bin_genome.bit_length() # I don't think we need this with the prepended 1
 
         
     def finish_organism(self):
@@ -191,8 +193,7 @@ class DecoderLinkedList:
         """
         if self._current_organ is not None:
             if self._current_gene is not None:
-                # self._current_node.set_noncoding(self._current_read) # Is this needed?
-                self._current_node.set_noncoding(self._read)
+                self._current_node.set_noncoding(self._current_read)
                 self._current_gene.set_node(self._current_node)
             else:
                 self._current_organ.set_node(self._current_node)
@@ -222,11 +223,6 @@ class DecoderLinkedList:
             return 0
             
         val = self._genome[pos:(pos+length)]
-
-        # The below is only needed if working with binary. deprecated presently
-        #mask = ((1 << length) -1) << len(self._genome)-(length + pos)
-        #val = (mask & self._bin_genome) >> len(self._genome)-(length+pos)
-        
         if pos == self._current_pos:
             self._current_pos += length
         return val
@@ -235,16 +231,16 @@ class DecoderLinkedList:
         """
         Continually reads the genome, constructing an organism as it goes.
         """
-        while self._current_pos < len(self._genome) - NORMAL_READ_LENGTH:
+        while self._current_pos < (len(self._genome)-1) - NORMAL_READ_LENGTH:
             read_val = self.read_at_pos()  # Returns a byte string
             # If the gene start code was encountered begin constructing a gene, unless no organ exists to house it
-            if bin(read_val) in GENE_OPCODES and self._current_organ is not None:
+            if GENE_LOWER_LIMIT <= bin(read_val) <= GENE_UPPER_LIMIT and self._current_organ is not None:
                 self.start_new_node('gene') # Finish the previously read node, begin a new one
                 self._current_node.set_start(read_val) # Assign the start value
                 self.read_gene_data() # Start reading it
 
             # If the organ start code was encountered, begin constructing an organ
-            elif bin(read_val) in ORGAN_OPCODES:
+            elif ORGAN_LOWER_LIMIT <= bin(read_val) <= ORGAN_UPPER_LIMIT:
                 self.start_new_node('organ')
                 self._current_node.set_start(read_val)
                 self.read_organ_data()
