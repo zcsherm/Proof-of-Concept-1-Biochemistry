@@ -23,6 +23,7 @@ class BioChemGene:
         self._organ = organ
         self._id = None  # Have a simple id creator in utilities
         self._type = type
+        self._dna_head = None
     
     def set_activation(self, name, function):
         self._activation_function = function
@@ -33,6 +34,9 @@ class BioChemGene:
 
     def set_dna_head(self, node):
         self._dna_head = node
+
+    def get_dna_head(self):
+        return self._dna_head
 
     def get_genome(self):
         if self._dna_head is not None:
