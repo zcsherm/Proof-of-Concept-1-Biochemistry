@@ -132,6 +132,9 @@ class InternalOrgan(Organ):
             gene.adjust_parameter()
         elif type == 'emitter':
             gene.release_chemical()
+        elif type == 'reaction':
+            if gene.check_requirements():
+                gene.react()
 
     def update_params(self):
         self._reaction_rate = sum(self._reaction_rate_receptors) / max(len(self._reaction_rate_receptors),1)
