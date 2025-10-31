@@ -39,6 +39,7 @@ class FirstTest(unittest.TestCase):
         cls._decoder = DecoderLinkedList()
         cls._decoder.set_genome(TEST_GENOME)
         cls._organism = cls._decoder.read_genome()
+        cls._reaction_gene = cls._organism.get_organs()[0].get_genes()[2]
         
     def test1(self):
         """
@@ -47,7 +48,15 @@ class FirstTest(unittest.TestCase):
         print("=================== TEST 1 ======================")
         self._organism.describe()
         self.assertTrue(len(self._organism.get_organs()) == 2)
-
+        
+    def test1_5_(self):
+        """
+        Test that the linked list dna matches the source dna.
+        """
+        print("================== TEST 1.5 ====================")
+        genome = 1+TEST_GENOME
+        self.assertEqual(genome, self._organism.get_genome())
+        
     # Test that the body can add and remove chemicals
     def test2(self):
         """
@@ -154,12 +163,66 @@ class FirstTest(unittest.TestCase):
         self.assertAlmostEqual(output, 5.9941, delta=.001)
         print(f"Outputs and inputs are good for test9")
         self.assertAlmostEqual(organism_b.get_chemical(5), 5.9941, delta=.001)
-
+        
     def test10(self):
         """
         Test that health adjustment works
         """
         pass # Eh, I'm sure it does idgaf
+
+# Test the reaction Gene
+    def test11(self):
+        """
+        Test that chemical reaction checks body for available chems
+        """
+        print("=================== TEST 11 ======================")
+        self.assertFalse(self._reaction_gene.check_requirements())
+
+    def test12(self):
+        """
+        Test for false positive
+        """
+        print("=================== TEST 12 ======================")
+        self._organism.add_chemical(6, 2)
+        self.assertFalse(self._reaction_gene.check_requirements())
+
+    def test13(self):
+        """
+        More tests for false positives
+        """
+        print("=================== TEST 13 ======================")
+        self._organism.add_chemical(4, .25)
+        self.assertFalse(self._reaction_gene.check_requirements())
+
+    def test14(self):
+        """
+        Test for true positive
+        """
+        print("=================== TEST 14 ======================")
+        self._organism.add_chemical(4, .25)
+        self.assertTrue(self._reaction_gene.check_requirements())
+
+    def test15(self):
+        """
+        Test that organ consumes chem 6
+        """
+        print("=================== TEST 15 ======================")
+        self._reaction_gene.react()
+        self.assertEqual(self._organism.get_chemical(6), 1)
+
+    def test16(self):
+        """
+        Test that organ consumed chem 
+        """
+        print("=================== TEST 16 ======================")
+        self.assertEqual(self._organism.get_chemical(4),0)
+
+    def test17(self):
+        """
+        Test that organ released chem
+        """
+        print("=================== TEST 17 ======================")
+        self.assertEqual(self._organism.get_chemical(2), 2)
         
 class SecondTest(unittest.TestCase):
     """
@@ -305,38 +368,39 @@ class ThirdTest(unittest.TestCase):
         Measure Organ and Gene count against number of op codes to make a gene in length 1200
         """
         new_ops = [0b11001, 0b11000, 0b10111, 0b10110]
-        tmp = Constructor.GENE_OPCODES
+        tmp = Constructor.GENE_UPPER_LIMIT
         all_data = pd.DataFrame()
         all_data_genes = pd.DataFrame()
         for i in range(4):
-            Constructor.GENE_OPCODES.append(new_ops[i])
+            Constructor.GENE_UPPER_LIMIT += 10*i
             val = decode_x_times(self._decoder, 100, 1200)
             val[0]['Number of Opcodes']=i+2
             val[1]['Number of Opcodes']=i+2
             all_data = pd.concat([all_data, val[0]], ignore_index=True)
             all_data_genes = pd.concat([all_data_genes, val[1]], ignore_index=True)
+            Constructor.GENE_UPPER_LIMIT = tmp
         bigplot(all_data, all_data_genes, 'Number of Opcodes')
-        Constructor.GENE_OPCODES = tmp
+        
         
     def test3(self):
         """
         Measure against op codes AND genome length (hyper param). Create a 4x4 grid of plots
         """
         fig, axes = plt.subplots(nrows=4, ncols=4, figsize=(10, 5)) # 4rows, 4 cols
-        new_ops = [0b11001, 0b11000, 0b10111, 0b10110]
-        tmp = Constructor.GENE_OPCODES
+        tmp = Constructor.GENE_UPPER_LIMIT
         all_data = pd.DataFrame()
         all_data_genes = pd.DataFrame()
         for j in range(4):
             genome_len = 1200 * (j+1)
             for i in range(4):
-                Constructor.GENE_OPCODES.append(new_ops[i])
+                Constructor.GENE_UPPER_LIMIT += 10 * i
                 val = decode_x_times(self._decoder, 100, genome_len)
                 val[0]['Number of Opcodes']=i+2
                 val[1]['Number of Opcodes']=i+2
                 all_data = pd.concat([all_data, val[0]], ignore_index=True)
                 all_data_genes = pd.concat([all_data_genes, val[1]], ignore_index=True)
-            plot_row(all_data, all_data_genes, j,axes)
+                Constructor.GENE_UPPER_LIMIT = tmp
+            plot_row_gene_per_org(all_data_genes, j,axes)
             Constructor.GENE_OPCODES = tmp
         plt.tight_layout()
         plt.show()
@@ -370,6 +434,16 @@ def plot_row(df1, df2, col, axes):
     sb.histplot(df2, x='Organ Count', ax = axes[col,3])
     axes[col,3].set_title(f"Number of organs with x Genes\nGenome len: {(col+1)*1200}  OpCodes: 5")
 
+def plot_row_gene_per_org(df1, col, axes):
+    sb.histplot(df1, x='Organ Count', ax = axes[col,1])
+    axes[col,3].set_title(f"Number of organs with x Genes\nGenome len: {(col+1)*1200}  OpCodes: 20")
+    sb.histplot(df2, x='Organ Count', ax = axes[col,2])
+    axes[col,3].set_title(f"Number of organs with x Genes\nGenome len: {(col+1)*1200}  OpCodes: 30")
+    sb.histplot(df2, x='Organ Count', ax = axes[col,3])
+    axes[col,3].set_title(f"Number of organs with x Genes\nGenome len: {(col+1)*1200}  OpCodes: 40")
+    sb.histplot(df2, x='Organ Count', ax = axes[col,4])
+    axes[col,3].set_title(f"Number of organs with x Genes\nGenome len: {(col+1)*1200}  OpCodes: 50")
+    
 def bigplot(df1, df2, hue_col):
     fig, axes = plt.subplots(nrows=2, ncols=4, figsize=(10, 5)) # 1 row, 4 cols
     sb.histplot(df1, x='Organ Count',hue=hue_col,multiple='stack', ax = axes[0,0])
