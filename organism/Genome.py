@@ -15,8 +15,9 @@ class Node:
     def get_structure_genome(self):
         """
         Return the entire genome for this structure
+        Test to confirm this works correctly and doesnt add or lose values.
         """
-        return bytes(self._start)[1:] + bytes(self._params)[1:] + bytes(self._noncoding)[1:]
+        return self.get_start() + self.get_params() + self.get_noncoding()
 
     def set_start(self, start):
         self._start = bin(b'1'+start)
@@ -28,13 +29,13 @@ class Node:
         self._noncoding = bin(b'1'+noncoding)
 
     def get_start(self):
-        return bytes(self._start)[1:]
-
+        return bytes(str(bin(int(self._start,2)))[3:],'utf-8')
+        
     def get_params(self):
-        return bytes(self._params)[1:]
+        return bytes(str(bin(int(self._start,2)))[3:],'utf-8')
 
     def get_noncoding(self):
-        return bytes(self._noncoding)[1:]
+        return bytes(str(bin(int(self._start,2)))[3:],'utf-8')
 
     def get_next(self):
         return self.next
