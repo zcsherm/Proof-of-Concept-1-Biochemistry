@@ -28,13 +28,13 @@ class Node:
         self._noncoding = bin(b'1'+noncoding)
 
     def get_start(self):
-        return bytes(self._start)
+        return bytes(self._start)[1:]
 
     def get_params(self):
-        return bytes(self._params)
+        return bytes(self._params)[1:]
 
     def get_noncoding(self):
-        return bytes(self._noncoding)
+        return bytes(self._noncoding)[1:]
 
     def get_next(self):
         return self.next
