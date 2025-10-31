@@ -91,6 +91,9 @@ class InternalOrgan(Organ):
     def release_chemical(self, chemical, amount):
         self._owner.add_chemical(chemical, amount)
 
+    def consume_chemical(self, chemical, amount):
+        self._owner.rem_chemical(chemical, amount)
+
     def health_adjust(self, value):
         self._health_receptors.append(value)
 
@@ -111,10 +114,13 @@ class InternalOrgan(Organ):
 
     def get_concentration(self, chemical):
         return self._owner.get_concentration(chemical)
-        
+
+    def get_chem_quant(self, chemical):
+        return self._owner.get_chemical(chemical)
+    
     def get_param_adjust(self, gene):
         return gene.adjust_parameter()
-        
+    
     def activate_organ(self):
         for gene in self._genes:
             self.activate_gene(gene)
