@@ -4,6 +4,7 @@ Handles possible methods for organism reproduction
 from Body import *
 from Decoder import *
 from utilities import *
+from Genome import *
 import random
 
 MUTATION_RATE = .01
@@ -34,11 +35,21 @@ def flip_segment(segment, mutation_rate=MUTATION_RATE, divisor=1):
             segment = flip_at(index, segment)
     return segment
 
-def increment_frame(frame, val):
-    original length = length(frame)
+def increment_frame(frame, val=1):
+    """
+    When given a binary string, will increment or decrement by the provided value
+    """
+    original_length = length(frame)
     new_val = int(frame, 2) + val
-    new_length = val.bit_length()
-    
+    new_val = bytes(str(bin(new_val))[2:],'utf-8')
+    new_length = len(new_val)
+    while len(new_val) != len(original_val)
+        if len(new_val) < len(original_val):
+            new_val = b'0' + new_val
+        else:
+            new_val = new_val[1:]
+    return new_val
+            
 def random_bit_flip(organism, mutation_rate = MUTATION_RATE):
     """
     performs random bit flipping across the genome with equal weighting (highly chaotic, probably). Assumes it is getting an int back.
@@ -102,7 +113,7 @@ def bit_flip_weighted(organism, mutation_rate = MUTATION_RATE):
             noncoding = b''
         start = flip_segment(start, mutation_rate, START_FLIP_DIVISOR)
         params = flip_segment(params, mutation_rate, PARAM_FLIP_DIVISOR)
-        noncoding = flip_segment(noncoding, mutation_rate, PARAM_NON_CODING
+        noncoding = flip_segment(noncoding, mutation_rate, PARAM_NON_CODING)
         
         genome += start+params+noncoding
         node = node.next
@@ -119,11 +130,11 @@ def insert_to_preserve_order(organism, mutation_rate = MUTATION_RATE):
 def increment_decrement_frame(organism, mutation_rate = MUTATION_RATE):
     """
     Whenever a frame is read, that frame may be decremented or incremented.
+    Perhaps test it with weighting as well
     """
     genome = b''
     node = organism.get_dna_head()
     while node.next:
-        
         if start is None:
             start = b''
         params = node.get_params()
@@ -132,16 +143,48 @@ def increment_decrement_frame(organism, mutation_rate = MUTATION_RATE):
         noncoding = node.get_noncoding()
         if noncoding is None:
             noncoding = b''
-    pass
-
+        if random.random() < mutation_rate:
+            val = random.choice(1,-1)
+            start = increment_segment(start, val)
+        if random.random() < mutation_rate:
+            val = random.choice(1,-1)
+            params = increment_segment(params, val)
+        if random.random() < mutation_rate:
+            val = random.choice(1,-1)
+            noncoding = increment_segment(noncoding, val)
+        genome += start + params + noncoding
+        node = node.next
+    return genome
+    
 # ANALOGOUS TO REALITY
 
 def retrotransposition(organism, mutation_rate=MUTATION_RATE):
     """
     Copys a structure and pastes it elsewhere in the genome.
     """
-    pass
-
+    node = organism.get_dna_head().next # need to skip over the start
+    new_node = None
+    while node.next:
+        if random.random() < mutation_rate:
+            if new_node is None:
+                new_node = Node()
+                new_node.set_start(node.get_start())
+                new_node.set_params(node.get_params())
+                new_node.set_noncoding(node.get_noncoding())
+            else:
+                new_node.next = node.next
+                non_coding = node.get_noncoding()
+                place = random.choice(range(len(non_coding)))
+                part_a = non_coding[:place]
+                part_b = non_coding[place+1:]
+                node.set_noncoding = part_a
+                new_node.set_noncoding = new_node.get_noncoding() + part_b
+                node.next = new_node
+                new_node = None
+    if node.next:
+        # Add logic for if the node was never added. Maybe reloop over whole genome, that way splices can go both ways?
+        pass
+        
 def deletion(organism, mutation_rate=MUTATION_RATE):
     """
     Deletes a structure from the genome, preserve reading frame
