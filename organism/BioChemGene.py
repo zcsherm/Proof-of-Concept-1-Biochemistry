@@ -178,13 +178,14 @@ class Reaction(BioChemGene):
         for i in range(self._num_of_chems_left):
             chem = self._chems[i]
             q = self._organ.get_chem_quant(chem[1])
+            print(chem)
             if q < chem[0]*(REACTION_MAX)/64:
                 return False
         return True
 
     def react(self):
         for i in range(len(self._chems)):
-            chem = self._chems[i]:
+            chem = self._chems[i]
             q = chem[0]*(REACTION_MAX)/64
             if i < self._num_of_chems_left:
                 self._organ.consume_chemical(chem[1], q)
@@ -192,25 +193,25 @@ class Reaction(BioChemGene):
                 self._organ.release_chemical(chem[1], q)
 
     def describe(self):
-    """
-    Outputs all atttributes of the gene in an easy to read manner
-    """
+        """
+        Outputs all atttributes of the gene in an easy to read manner
+        """
         eq = ''
         for i in range(len(self._chems)):
             chem = self._chems[i]
             if i < self._num_of_chems_left:
                 if i == 1:
                     eq += " + "
-                s = f"{chem[0]}(Chemical {chem[1]})"
+                s = f"{chem[0]*REACTION_MAX/64}(Chemical {chem[1]})"
                 eq += s
             else:
                 if i == self._num_of_chems_left:
                     eq += " = "
                 else:
                     eq += " + "
-                s = f"{chem[0]}(Chemical {chem[1]})"
+                s = f"{chem[0]*REACTION_MAX/64}(Chemical {chem[1]})"
                 eq += s
-                
+
         s1 = f"\t\tGene {self._id}:\n"
         s2 = f"\t\t\t This gene performs a chemical reaction.\n"
         s3 = f"\t\t\t\t Equation: {eq}\n"

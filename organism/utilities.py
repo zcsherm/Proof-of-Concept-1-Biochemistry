@@ -68,11 +68,8 @@ def bit_flip(binary_val, position):
     """
     position should be 0 indexed from start of binary string, with the first bit on the left at pos 0
     """
-    return binary_val ^= (1 << (binary_val.bit_length()-pos)
+    return binary_val ^ (1 << (binary_val.bit_length()-position))
 
-"""
-Add more functions or trim? Maybe give each one 2 bytecodes, but some only have 1?
-"""
 
 func_names = ['linear', 'inverse linear', 'exponential', 'inverse exponential', 'radical', 'inverse radical', 'sigmoid', 'inverse sigmoid', 'negative square root']
 bits_needed = [tuple(), tuple(), (4,), (4,), (4,), (4,), (7,7), (7,7), (7,7)]

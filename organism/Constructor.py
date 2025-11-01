@@ -155,10 +155,10 @@ class Decoder:
         self._current_gene.set_num_of_chems_left(left)
         self._current_gene.set_num_of_chems_right(right)
         chems = []
-        for i in range((left % 2) + 1 + (right % 3):
+        for i in range((left % 2) + 1 + (right % 3)):
             val = self.read_at_pos(length = 6)
             chem = self.read_at_pos(length = 4)
-            chems.append((val,chems))
+            chems.append((val,chem))
         self._current_gene.set_chems_and_coefficients(chems)
         self._current_organ.add_gene(self._current_gene)
         
@@ -194,9 +194,9 @@ class DecoderLinkedList:
         if self._current_organ is not None:
             if self._current_gene is not None:
                 self._current_node.set_noncoding(self._current_read)
-                self._current_gene.set_node(self._current_node)
+                self._current_gene.set_dna_head(self._current_node)
             else:
-                self._current_organ.set_node(self._current_node)
+                self._current_organ.set_dna_head(self._current_node)
             self._current_organism.add_organ(self._current_organ)
         creature = self._current_organism
         self._current_organism = Body()
@@ -214,13 +214,13 @@ class DecoderLinkedList:
         if pos == None:
             pos = self._current_pos
         if length == 0:
-            return
+            return b''
         if pos >= len(self._genome):
             self._current_pos = len(self._genome)
-            return 0
+            return b''
         if pos + length >= len(self._genome):
             self._current_pos = len(self._genome)
-            return 0
+            return b''
             
         val = self._genome[pos:(pos+length)]
         if pos == self._current_pos:
@@ -234,13 +234,13 @@ class DecoderLinkedList:
         while self._current_pos < (len(self._genome)-1) - NORMAL_READ_LENGTH:
             read_val = self.read_at_pos()  # Returns a byte string
             # If the gene start code was encountered begin constructing a gene, unless no organ exists to house it
-            if GENE_LOWER_LIMIT <= bin(read_val) <= GENE_UPPER_LIMIT and self._current_organ is not None:
+            if GENE_LOWER_LIMIT <= int(read_val,2) <= GENE_UPPER_LIMIT and self._current_organ is not None:
                 self.start_new_node('gene') # Finish the previously read node, begin a new one
                 self._current_node.set_start(read_val) # Assign the start value
                 self.read_gene_data() # Start reading it
 
             # If the organ start code was encountered, begin constructing an organ
-            elif ORGAN_LOWER_LIMIT <= bin(read_val) <= ORGAN_UPPER_LIMIT:
+            elif ORGAN_LOWER_LIMIT <= int(read_val,2) <= ORGAN_UPPER_LIMIT:
                 self.start_new_node('organ')
                 self._current_node.set_start(read_val)
                 self.read_organ_data()
@@ -262,12 +262,12 @@ class DecoderLinkedList:
         # Create a new organ and get the parameters.
         self._current_organ = InternalOrgan('internal', self._current_organism)
         self._current_organ.set_def_health()
-        val = self.read_at_pos()
+        val = self.read_at_pos(length=5)
         read = val
-        self._current_organ.set_reaction_rate(int(val)/32)
-        val = self.read_at_pos()
+        self._current_organ.set_reaction_rate(int(val,2)/32)
+        val = self.read_at_pos(length=5)
         read += val
-        self._current_organ.set_act_rate(int(val)/32)
+        self._current_organ.set_act_rate(int(val,2)/32)
         self._current_node.set_params(read)
         return
 
@@ -278,24 +278,24 @@ class DecoderLinkedList:
         # Find out what type of gene it is
         type = self.read_at_pos(length = GENE_READ_LENGTH)
         read = type
-        type = int(type) % GENE_TYPES
+        type = int(type,2) % GENE_TYPES
         if type == 2:
             # It's gonna be easier to separate all the logic into separate functions instead
             self._current_gene = Reaction(self._current_organ, 'reaction')
-            self._read_reaction_data()
+            self.read_reaction_data()
             return
         elif type == 1:
             self._current_gene = Emitter(self._current_organ, 'emitter')
-            rate = self.read_at_pos()
+            rate = self.read_at_pos(length=5)
             read += rate
-            self._current_gene.set_output_rate(int(rate))
+            self._current_gene.set_output_rate(int(rate,2))
         elif type == 0:
             self._current_gene = Receptor(self._current_organ, 'receptor')
         
         # Now parse the function this gene uses. Each function needs different parameters
         func = self.read_at_pos(length = 3)
         read += func
-        func = int(func)
+        func = int(func,2)
         func_name = func_names[func]
         func_read_lengths = bits_needed[func]
         params = []
@@ -303,7 +303,7 @@ class DecoderLinkedList:
         for param in func_read_lengths:
             val = self.read_at_pos(length = param)
             read += val
-            params.append(int(val)) # Does this need to be an int first?
+            params.append(int(val,2))
         if params:
             function = functions[func](*params)
         else:
@@ -311,14 +311,14 @@ class DecoderLinkedList:
         self._current_gene.set_activation(func_name, function)
 
         # Now handle the other parameters of the gene
-        val = self.read_pos(length = 4)
+        val = self.read_at_pos(length = 4)
         read += val
-        val = int(val) % self._current_organ.get_param_numbers()
+        val = int(val,2) % self._current_organ.get_param_numbers()
         p=  self._current_organ._parameters[val]
         self._current_gene.set_parameter(p[0], p[1])
         val = self.read_at_pos(length = 4)
         read += val
-        val = int(val)
+        val = int(val,2)
         self._current_gene.set_chemical(val)
         self._current_organ.add_gene(self._current_gene)
         self._current_node.set_params(read)
@@ -327,15 +327,15 @@ class DecoderLinkedList:
         left = self.read_at_pos(length = 4)
         right = self.read_at_pos(length = 4)
         read = left+ right
-        self._current_gene.set_num_of_chems_left(int(left))
-        self._current_gene.set_num_of_chems_right(int(right))
+        self._current_gene.set_num_of_chems_left(int(left,2))
+        self._current_gene.set_num_of_chems_right(int(right,2))
         chems = []
-        for i in range((int(left) % 2) + 1 + (int(right) % 3):
+        for i in range((int(left,2) % 2) + 1 + (int(right,2) % 3)):
             val = self.read_at_pos(length = 6)
             read += val
             chem = self.read_at_pos(length = 4)
             read += chem
-            chems.append((val,chems))
+            chems.append((int(val,2),int(chem,2)))
         self._current_gene.set_chems_and_coefficients(chems)
         self._current_organ.add_gene(self._current_gene)
         self._current_node.set_params(read)
@@ -357,6 +357,7 @@ class DecoderLinkedList:
                 self._current_gene.set_dna_head(self._current_node)
                 
         else:
-            self._current_gene.set_dna_head(self._current_node)
+            if self._current_gene is not None:
+                self._current_gene.set_dna_head(self._current_node)
         
         self._current_node = self._current_node.next

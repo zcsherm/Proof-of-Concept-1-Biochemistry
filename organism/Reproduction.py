@@ -2,7 +2,7 @@
 Handles possible methods for organism reproduction
 """
 from Body import *
-from Decoder import *
+from Constructor import *
 from utilities import *
 from Genome import *
 import random
@@ -39,12 +39,12 @@ def increment_frame(frame, val=1):
     """
     When given a binary string, will increment or decrement by the provided value
     """
-    original_length = length(frame)
+    original_length = len(frame)
     new_val = int(frame, 2) + val
     new_val = bytes(str(bin(new_val))[2:],'utf-8')
     new_length = len(new_val)
-    while len(new_val) != len(original_val)
-        if len(new_val) < len(original_val):
+    while len(new_val) != original_length:
+        if len(new_val) < original_length:
             new_val = b'0' + new_val
         else:
             new_val = new_val[1:]
@@ -113,7 +113,7 @@ def bit_flip_weighted(organism, mutation_rate = MUTATION_RATE):
             noncoding = b''
         start = flip_segment(start, mutation_rate, START_FLIP_DIVISOR)
         params = flip_segment(params, mutation_rate, PARAM_FLIP_DIVISOR)
-        noncoding = flip_segment(noncoding, mutation_rate, PARAM_NON_CODING)
+        noncoding = flip_segment(noncoding, mutation_rate, NON_CODING_DIVISOR)
         
         genome += start+params+noncoding
         node = node.next
@@ -144,14 +144,14 @@ def increment_decrement_frame(organism, mutation_rate = MUTATION_RATE):
         if noncoding is None:
             noncoding = b''
         if random.random() < mutation_rate:
-            val = random.choice(1,-1)
-            start = increment_segment(start, val)
+            val = random.choice([1,-1])
+            start = increment_frame(start, val) # Wait no, this needs to read frame by frame first.
         if random.random() < mutation_rate:
-            val = random.choice(1,-1)
-            params = increment_segment(params, val)
+            val = random.choice([1,-1])
+            params = increment_frame(params, val)
         if random.random() < mutation_rate:
-            val = random.choice(1,-1)
-            noncoding = increment_segment(noncoding, val)
+            val = random.choice([1,-1])
+            noncoding = increment_frame(noncoding, val)
         genome += start + params + noncoding
         node = node.next
     return genome

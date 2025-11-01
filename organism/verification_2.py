@@ -7,7 +7,7 @@ import seaborn as sb
 import matplotlib.pyplot as plt
 from utilities import *
 import Constructor
-from Constructor import Decoder, GENE_OPCODES, ORGAN_OPCODES
+from Constructor import Decoder, DecoderLinkedList
 
 ORGAN_START = b'11001000'
 O_PARAM_ONE = b'00001'
@@ -21,9 +21,9 @@ GENE_TWO = b'0000'
 GENE_TWO_FUNC = b'11110101101000001' # Reverse sigmoid with coef = 86, mean= 65/128
 GENE_TWO_PARAMS = b'00100011' # Link to reaction rate and chem 3
 GENE_THREE = b'0010' # Reaction gene
-GENE_THREE_PARAMS = b'00100001' # 2, 1 
-GENE_THREE_CHEMS =b'01000001110010000100100000000010' # 16, 6, 8, 4, 32, 2 
-TEST_GENOME = ORGAN_START + O_PARAM_ONE + O_PARAM_TWO + GENE_START + GENE_TYPE + GENE_RATE + GENE_FUNC +GENE_PARAMS + GENE_START + GENE_TWO + GENE_TWO_FUNC + GENE_TWO_PARAMS + GENE_START + GENE_THREE + GENE_THREE_PARAMS + GENE_THREE_CHEMS + ORGAN_START + GENE_TWO_PARAMS
+GENE_THREE_PARAMS = b'00110001' # 2, 1
+GENE_THREE_CHEMS =b'010000011000100001001000000010' # 16, 6, 8, 4, 32, 2
+TEST_GENOME = ORGAN_START + O_PARAM_ONE + O_PARAM_TWO + GENE_START + GENE_TYPE + GENE_RATE + GENE_FUNC +GENE_PARAMS + GENE_START + GENE_TWO + GENE_TWO_FUNC + GENE_TWO_PARAMS + GENE_START + GENE_THREE + GENE_THREE_PARAMS + GENE_THREE_CHEMS + ORGAN_START + b'1010101010101010101010101010'
 
 SEED = None
 
@@ -41,7 +41,7 @@ class FirstTest(unittest.TestCase):
         cls._organism = cls._decoder.read_genome()
         cls._reaction_gene = cls._organism.get_organs()[0].get_genes()[2]
         
-    def test1(self):
+    def test01(self):
         """
         Tests that the genome was decoded accurately into 2 organs, prints the organisms descriptions for visual inspection
         """
@@ -49,7 +49,7 @@ class FirstTest(unittest.TestCase):
         self._organism.describe()
         self.assertTrue(len(self._organism.get_organs()) == 2)
         
-    def test1_5_(self):
+    def test01_5(self):
         """
         Test that the linked list dna matches the source dna.
         """
@@ -58,7 +58,7 @@ class FirstTest(unittest.TestCase):
         self.assertEqual(genome, self._organism.get_genome())
         
     # Test that the body can add and remove chemicals
-    def test2(self):
+    def test02(self):
         """
         Test that adding a chemical to the body actually works
         """
@@ -66,7 +66,7 @@ class FirstTest(unittest.TestCase):
         self._organism.add_chemical(14, 3)
         self.assertEqual(self._organism.get_chemical(14), 3)
 
-    def test3(self):
+    def test03(self):
         """
         Test that concentration is calculated correctly at only 1 chemical
         """
@@ -74,7 +74,7 @@ class FirstTest(unittest.TestCase):
         self._organism.calc_concentrations()
         self.assertEqual(self._organism.get_concentration(14),1)
 
-    def test4(self):
+    def test04(self):
         """
         Test adding a second chemical
         """
@@ -82,7 +82,7 @@ class FirstTest(unittest.TestCase):
         self._organism.add_chemical(2, 2)
         self.assertEqual(self._organism.get_chemical(2),2)
 
-    def test5(self):
+    def test05(self):
         """
         Test that concentration is accurate with multiple chemicals in body
         """
@@ -90,7 +90,7 @@ class FirstTest(unittest.TestCase):
         self._organism.calc_concentrations()
         self.assertEqual(self._organism.get_concentration(2), .4)
 
-    def test6(self):
+    def test06(self):
         """
         Remove a chemical and verify that concentrations were updated
         """
@@ -99,7 +99,7 @@ class FirstTest(unittest.TestCase):
         self._organism.calc_concentrations()
         self.assertTrue(self._organism.get_concentration(14), .75)
 
-    def test7(self):
+    def test07(self):
         """
         Remove all chemicals, test that no value goes under 0
         """
@@ -109,7 +109,7 @@ class FirstTest(unittest.TestCase):
         self.assertTrue(self._organism.get_chemical(14) == 0)
 
 # Test that receptor can read chem
-    def test8(self):
+    def test08(self):
         """
         Test that a receptors function outputs expected values. 
         """
@@ -137,7 +137,7 @@ class FirstTest(unittest.TestCase):
         self._organism_b = organism_b
 
 
-    def test82(self):
+    def test082(self):
         """
         Test that a receptor can actually adjust a parameter
         """
@@ -148,7 +148,7 @@ class FirstTest(unittest.TestCase):
         self.assertTrue(.7 > self._organism_b.get_organs()[0].get_reaction_rate() > .6)
         
 # Test that emitter can read parameter
-    def test9(self):
+    def test09(self):
         """
         Test that the emitter can properly read and output. Test that body receives chem
         """
@@ -176,7 +176,7 @@ class FirstTest(unittest.TestCase):
         Test that chemical reaction checks body for available chems
         """
         print("=================== TEST 11 ======================")
-        self.assertFalse(self._reaction_gene.check_requirements())
+        self.assertFalse(self._reaction_gene.check_for_requirements())
 
     def test12(self):
         """
@@ -184,7 +184,7 @@ class FirstTest(unittest.TestCase):
         """
         print("=================== TEST 12 ======================")
         self._organism.add_chemical(6, 2)
-        self.assertFalse(self._reaction_gene.check_requirements())
+        self.assertFalse(self._reaction_gene.check_for_requirements())
 
     def test13(self):
         """
@@ -192,7 +192,7 @@ class FirstTest(unittest.TestCase):
         """
         print("=================== TEST 13 ======================")
         self._organism.add_chemical(4, .25)
-        self.assertFalse(self._reaction_gene.check_requirements())
+        self.assertFalse(self._reaction_gene.check_for_requirements())
 
     def test14(self):
         """
@@ -200,7 +200,7 @@ class FirstTest(unittest.TestCase):
         """
         print("=================== TEST 14 ======================")
         self._organism.add_chemical(4, .25)
-        self.assertTrue(self._reaction_gene.check_requirements())
+        self.assertTrue(self._reaction_gene.check_for_requirements())
 
     def test15(self):
         """
@@ -437,11 +437,11 @@ def plot_row(df1, df2, col, axes):
 def plot_row_gene_per_org(df1, col, axes):
     sb.histplot(df1, x='Organ Count', ax = axes[col,1])
     axes[col,3].set_title(f"Number of organs with x Genes\nGenome len: {(col+1)*1200}  OpCodes: 20")
-    sb.histplot(df2, x='Organ Count', ax = axes[col,2])
+    sb.histplot(df1, x='Organ Count', ax = axes[col,2])
     axes[col,3].set_title(f"Number of organs with x Genes\nGenome len: {(col+1)*1200}  OpCodes: 30")
-    sb.histplot(df2, x='Organ Count', ax = axes[col,3])
+    sb.histplot(df1, x='Organ Count', ax = axes[col,3])
     axes[col,3].set_title(f"Number of organs with x Genes\nGenome len: {(col+1)*1200}  OpCodes: 40")
-    sb.histplot(df2, x='Organ Count', ax = axes[col,4])
+    sb.histplot(df1, x='Organ Count', ax = axes[col,4])
     axes[col,3].set_title(f"Number of organs with x Genes\nGenome len: {(col+1)*1200}  OpCodes: 50")
     
 def bigplot(df1, df2, hue_col):

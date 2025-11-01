@@ -20,13 +20,13 @@ class Node:
         return self.get_start() + self.get_params() + self.get_noncoding()
 
     def set_start(self, start):
-        self._start = bin(b'1'+start)
+        self._start = bin(int(b'1'+start,2))
 
     def set_params(self, params):
-        self._params = bin(b'1'+params)
+        self._params = bin(int(b'1'+params,2))
 
     def set_noncoding(self, noncoding):
-        self._noncoding = bin(b'1'+noncoding)
+        self._noncoding = bin(int(b'1'+noncoding,2))
 
     def get_start(self):
         return bytes(str(bin(int(self._start,2)))[3:],'utf-8')
