@@ -329,7 +329,7 @@ class ThirdTest(unittest.TestCase):
         """
         random.seed(SEED) # replace seed with None for truly random results
         print("\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~ THIRD TEST ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n")
-        cls._decoder = Decoder()
+        cls._decoder = DecoderLinkedList()
 
     def test1(self):
         """
@@ -435,13 +435,13 @@ def plot_row(df1, df2, col, axes):
     axes[col,3].set_title(f"Number of organs with x Genes\nGenome len: {(col+1)*1200}  OpCodes: 5")
 
 def plot_row_gene_per_org(df1, col, axes):
-    sb.histplot(df1, x='Organ Count', ax = axes[col,1])
+    sb.histplot(df1, x='Organ Count', ax = axes[col,0])
     axes[col,3].set_title(f"Number of organs with x Genes\nGenome len: {(col+1)*1200}  OpCodes: 20")
-    sb.histplot(df1, x='Organ Count', ax = axes[col,2])
+    sb.histplot(df1, x='Organ Count', ax = axes[col,1])
     axes[col,3].set_title(f"Number of organs with x Genes\nGenome len: {(col+1)*1200}  OpCodes: 30")
-    sb.histplot(df1, x='Organ Count', ax = axes[col,3])
+    sb.histplot(df1, x='Organ Count', ax = axes[col,2])
     axes[col,3].set_title(f"Number of organs with x Genes\nGenome len: {(col+1)*1200}  OpCodes: 40")
-    sb.histplot(df1, x='Organ Count', ax = axes[col,4])
+    sb.histplot(df1, x='Organ Count', ax = axes[col,3])
     axes[col,3].set_title(f"Number of organs with x Genes\nGenome len: {(col+1)*1200}  OpCodes: 50")
     
 def bigplot(df1, df2, hue_col):

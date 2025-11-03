@@ -231,7 +231,7 @@ class DecoderLinkedList:
         """
         Continually reads the genome, constructing an organism as it goes.
         """
-        while self._current_pos < (len(self._genome)-1) - NORMAL_READ_LENGTH:
+        while self._current_pos < (len(self._genome)-1) - 40:
             read_val = self.read_at_pos()  # Returns a byte string
             # If the gene start code was encountered begin constructing a gene, unless no organ exists to house it
             if GENE_LOWER_LIMIT <= int(read_val,2) <= GENE_UPPER_LIMIT and self._current_organ is not None:
@@ -324,6 +324,8 @@ class DecoderLinkedList:
         self._current_node.set_params(read)
 
     def read_reaction_data(self):
+        if self._current_pos > len(self._genome)-50:
+            return
         left = self.read_at_pos(length = 4)
         right = self.read_at_pos(length = 4)
         read = left+ right
