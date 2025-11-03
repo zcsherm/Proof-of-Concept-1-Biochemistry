@@ -390,18 +390,21 @@ class ThirdTest(unittest.TestCase):
         tmp = Constructor.GENE_UPPER_LIMIT
         all_data = pd.DataFrame()
         all_data_genes = pd.DataFrame()
+        frames = []
         for j in range(4):
             genome_len = 1200 * (j+1)
             for i in range(4):
                 Constructor.GENE_UPPER_LIMIT += 10 * i
                 val = decode_x_times(self._decoder, 100, genome_len)
-                val[0]['Number of Opcodes']=i+2
-                val[1]['Number of Opcodes']=i+2
+                val[0]['Number of Opcodes']=20 + 10*i
+                val[1]['Number of Opcodes']=20 + 10*i
                 all_data = pd.concat([all_data, val[0]], ignore_index=True)
                 all_data_genes = pd.concat([all_data_genes, val[1]], ignore_index=True)
+                frames.append(val[1])
                 Constructor.GENE_UPPER_LIMIT = tmp
-            plot_row_gene_per_org(all_data_genes, j,axes)
+            plot_row_gene_per_org(frames, j,axes)
             Constructor.GENE_OPCODES = tmp
+            frames = []
         plt.tight_layout()
         plt.show()
         
@@ -433,17 +436,30 @@ def plot_row(df1, df2, col, axes):
     axes[col,2].set_title(f"Average number of Genes per organ in each organism\nGenome len: {(col+1)*1200}  OpCodes: 4")
     sb.histplot(df2, x='Organ Count', ax = axes[col,3])
     axes[col,3].set_title(f"Number of organs with x Genes\nGenome len: {(col+1)*1200}  OpCodes: 5")
-
+"""
 def plot_row_gene_per_org(df1, col, axes):
     sb.histplot(df1, x='Organ Count', ax = axes[col,0])
-    axes[col,3].set_title(f"Number of organs with x Genes\nGenome len: {(col+1)*1200}  OpCodes: 20")
+    axes[col,0].set_title(f"Number of organs with x Genes\nGenome len: {(col+1)*1200}  OpCodes: 20")
     sb.histplot(df1, x='Organ Count', ax = axes[col,1])
-    axes[col,3].set_title(f"Number of organs with x Genes\nGenome len: {(col+1)*1200}  OpCodes: 30")
+    axes[col,1].set_title(f"Number of organs with x Genes\nGenome len: {(col+1)*1200}  OpCodes: 30")
     sb.histplot(df1, x='Organ Count', ax = axes[col,2])
-    axes[col,3].set_title(f"Number of organs with x Genes\nGenome len: {(col+1)*1200}  OpCodes: 40")
+    axes[col,2].set_title(f"Number of organs with x Genes\nGenome len: {(col+1)*1200}  OpCodes: 40")
     sb.histplot(df1, x='Organ Count', ax = axes[col,3])
     axes[col,3].set_title(f"Number of organs with x Genes\nGenome len: {(col+1)*1200}  OpCodes: 50")
-    
+"""
+
+
+def plot_row_gene_per_org(df1, col, axes):
+    sb.histplot(df1[0], x='Organ Count', ax=axes[col, 0])
+    axes[col, 0].set_title(f"Number of organs with x Genes\nGenome len: {(col + 1) * 1200}  OpCodes: 20")
+    sb.histplot(df1[1], x='Organ Count', ax=axes[col, 1])
+    axes[col, 1].set_title(f"Number of organs with x Genes\nGenome len: {(col + 1) * 1200}  OpCodes: 30")
+    sb.histplot(df1[2], x='Organ Count', ax=axes[col, 2])
+    axes[col, 2].set_title(f"Number of organs with x Genes\nGenome len: {(col + 1) * 1200}  OpCodes: 40")
+    sb.histplot(df1[3], x='Organ Count', ax=axes[col, 3])
+    axes[col, 3].set_title(f"Number of organs with x Genes\nGenome len: {(col + 1) * 1200}  OpCodes: 50")
+
+
 def bigplot(df1, df2, hue_col):
     fig, axes = plt.subplots(nrows=2, ncols=4, figsize=(10, 5)) # 1 row, 4 cols
     sb.histplot(df1, x='Organ Count',hue=hue_col,multiple='stack', ax = axes[0,0])
