@@ -28,11 +28,17 @@ def flip_segment(segment, mutation_rate=MUTATION_RATE, divisor=1):
         roll = random.random()
         while roll > odds:
             count += 1
+            odds = (1 -(mutation_rate/divisor)) ** len(segment-count)
             roll = random.random()
         count = max(count, len(segment))
+        choices = random.sample(range(len(segment)),count)
+        for i in choices:
+            segment = flip_at(i, segment)
+        """
         for _ in range(len(count)):
             index = random.choice(range(len(segment)))
             segment = flip_at(index, segment)
+        """
     return segment
 
 def increment_frame(frame, val=1):
@@ -145,13 +151,13 @@ def increment_decrement_frame(organism, mutation_rate = MUTATION_RATE):
             noncoding = b''
         if random.random() < mutation_rate:
             val = random.choice([1,-1])
-            start = increment_frame(start, val) # Wait no, this needs to read frame by frame first.
+            start = increment_frame(start, val) 
         if random.random() < mutation_rate:
             val = random.choice([1,-1])
-            params = increment_frame(params, val)
+            params = increment_frame(params, val) # Wait no, this needs to read frame by frame first.
         if random.random() < mutation_rate:
             val = random.choice([1,-1])
-            noncoding = increment_frame(noncoding, val)
+            noncoding = increment_frame(noncoding, val) # Wait no, this needs to read frame by frame first.
         genome += start + params + noncoding
         node = node.next
     return genome
@@ -164,7 +170,7 @@ def retrotransposition(organism, mutation_rate=MUTATION_RATE):
     """
     node = organism.get_dna_head().next # need to skip over the start
     new_node = None
-    while node.next:
+    while node:
         if random.random() < mutation_rate:
             if new_node is None:
                 new_node = Node()
@@ -181,21 +187,41 @@ def retrotransposition(organism, mutation_rate=MUTATION_RATE):
                 new_node.set_noncoding = new_node.get_noncoding() + part_b
                 node.next = new_node
                 new_node = None
-    if node.next:
-        # Add logic for if the node was never added. Maybe reloop over whole genome, that way splices can go both ways?
-        pass
-        
+                node = node.next
+            if node.next is None and new_node:
+                node = organism.get_dna_head().next # this probably isn't the best way to do it, but it works for now
+            else:
+                node = node.next
+                
 def deletion(organism, mutation_rate=MUTATION_RATE):
     """
     Deletes a structure from the genome, preserve reading frame
     """
-    pass
+    prev_node = organism.get_dna_head()
+    node = prev_node.next
+    while node:
+        if random.random() < mutation_rate:
+            prev_node.next = node.next
+        else:
+            prev_node = node
+        node = node.next
+    
 
 def duplication(organism, mutation_rate=MUTATION_RATE):
     """
     Duplicates a gene or structure and places it adjacent to this structure
     """
-    pass
+    prev_node = organism.get_dna_head()
+    node = prev_node.next
+    while node:
+        if random.random() < mutation_rate:
+            new_node = Node()
+            new_node.set_start(node.get_start())
+            new_node.set_params(node.get_params())
+            new_node.set_noncoding(node.get_noncoding())
+            new_node.next = node.next
+            node.next = new_node
+        node = node.next
     
 def point_deletion(organism, mutation_rate= MUTATION_RATE):
     """
