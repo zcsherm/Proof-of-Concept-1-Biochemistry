@@ -78,7 +78,7 @@ The final stage of testing aims to see if random genomes can actually produce a 
 
 This test is focused on using the creature structure in a genetic search algorithm to find an optimal survival chance. We've constructed a simple 2D environment that populates cells with food. A large number of random genomes are created and dropped into the grid. From this large population, we can take the organisms that were able to survive the longest and produce a subsequent generation. This is to be repeated a number of times and the metrics on the fitness function can be analyzed. We hope to see a continual improvement in fitness among generations. Repeating this several times should show considerable differentiation between successful genomes. Additionally, we may also see some cracks start to show, as organisms take advantage of mistakes in implementation, such as an organism discovering how to become biologically immortal or how to violate the laws of thermodynamics.
 
-# Findings
+# Findings/Changelog
 
 ## Stage 1
 
@@ -106,3 +106,9 @@ In response, I changed the DNA format into a singly linked list, where each stru
 Additionally I added the gene for causing a chemical reaction. This should turn creatures into more robust specimens.
 
 Finally, this refactoring and reworking necessitated new unit tests.
+
+11/3
+
+Was sick the last few days so progress was slow. I got the new unit tests working with the genome data stored a linked list. I also added a break condition on reading a genome. It will not read the last 100 bits. This just prevents an incomplete organ or gene from being created. Probably will find a more elegant solution. I also changed the opcodes to be inside of a range instead of specific values and that the default read length is 8 bits, instead of 5. This should give more space between organs. I found that a genome of 4800 length had a pretty decent number of genes each.
+
+I am beginning to move to stage 2 testing. I have most methods for mutation implemented, but need testing to confirm working. I also need to find a way to compare organisms for similarity. Perhaps each genes params decodes to a string that represents it?
