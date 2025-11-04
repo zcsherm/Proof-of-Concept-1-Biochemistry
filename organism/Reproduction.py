@@ -28,9 +28,9 @@ def flip_segment(segment, mutation_rate=MUTATION_RATE, divisor=1):
         roll = random.random()
         while roll > odds:
             count += 1
-            odds = (1 -(mutation_rate/divisor)) ** len(segment-count)
+            odds = (1 -(mutation_rate/divisor)) ** (len(segment)-count)
             roll = random.random()
-        count = max(count, len(segment))
+        count = min(count, len(segment))
         choices = random.sample(range(len(segment)),count)
         for i in choices:
             segment = flip_at(i, segment)
@@ -46,6 +46,10 @@ def increment_frame(frame, val=1):
     When given a binary string, will increment or decrement by the provided value
     """
     original_length = len(frame)
+    if int(frame,2) == 0:
+        mask = int(frame,2)+ 2**len(frame)
+        mask-= 1
+        return bytes(bin(mask),'utf-8')[2:]
     new_val = int(frame, 2) + val
     new_val = bytes(str(bin(new_val))[2:],'utf-8')
     new_length = len(new_val)

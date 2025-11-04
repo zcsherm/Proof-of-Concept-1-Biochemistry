@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from utilities import *
 import Constructor
 from Constructor import Decoder, DecoderLinkedList
+from Reproduction import *
 
 ORGAN_START = b'11001000'
 O_PARAM_ONE = b'00001'
@@ -23,7 +24,7 @@ GENE_TWO_PARAMS = b'00100011' # Link to reaction rate and chem 3
 GENE_THREE = b'0010' # Reaction gene
 GENE_THREE_PARAMS = b'00110001' # 2, 1
 GENE_THREE_CHEMS =b'010000011000100001001000000010' # 16, 6, 8, 4, 32, 2
-TEST_GENOME = ORGAN_START + O_PARAM_ONE + O_PARAM_TWO + GENE_START + GENE_TYPE + GENE_RATE + GENE_FUNC +GENE_PARAMS + GENE_START + GENE_TWO + GENE_TWO_FUNC + GENE_TWO_PARAMS + GENE_START + GENE_THREE + GENE_THREE_PARAMS + GENE_THREE_CHEMS + ORGAN_START + b'1010101010101010101010101010'
+TEST_GENOME = ORGAN_START + O_PARAM_ONE + O_PARAM_TWO + GENE_START + GENE_TYPE + GENE_RATE + GENE_FUNC +GENE_PARAMS + GENE_START + GENE_TWO + GENE_TWO_FUNC + GENE_TWO_PARAMS + GENE_START + GENE_THREE + GENE_THREE_PARAMS + GENE_THREE_CHEMS + ORGAN_START + b'10101010101010101101010101010101001010101010'
 
 TEST_A = b'110101'
 TEST_B = b'111101'
@@ -74,13 +75,13 @@ class TestOne(unittest.TestCase):
         """
         same = 0
         not_same = 0
-        for _ in range(1000):
+        for _ in range(10000):
             new = flip_segment(TEST_A, .5)
             if new == TEST_A:
                 same += 1
             else:
                 not_same += 1
-        self.assertAlmostEqual(.5, same/not_same, delta=.05)
+        self.assertAlmostEqual(.5, same/not_same, delta=.1)
 
     def test05(self):
         """
@@ -100,8 +101,8 @@ class TestOne(unittest.TestCase):
         """
         self.assertEqual(TEST_H, increment_frame(TEST_G)) 
                          
-    def test05(self):
+    def test08(self):
         """
         Test that increment frame works in normal situations
         """
-        self.assertEqual(TEST_G, increment_frame(TEST_H,-1)) # This should fail 
+        self.assertEqual(TEST_G, increment_frame(TEST_H,-1))

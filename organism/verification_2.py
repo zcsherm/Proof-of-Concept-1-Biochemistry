@@ -23,7 +23,7 @@ GENE_TWO_PARAMS = b'00100011' # Link to reaction rate and chem 3
 GENE_THREE = b'0010' # Reaction gene
 GENE_THREE_PARAMS = b'00110001' # 2, 1
 GENE_THREE_CHEMS =b'010000011000100001001000000010' # 16, 6, 8, 4, 32, 2
-TEST_GENOME = ORGAN_START + O_PARAM_ONE + O_PARAM_TWO + GENE_START + GENE_TYPE + GENE_RATE + GENE_FUNC +GENE_PARAMS + GENE_START + GENE_TWO + GENE_TWO_FUNC + GENE_TWO_PARAMS + GENE_START + GENE_THREE + GENE_THREE_PARAMS + GENE_THREE_CHEMS + ORGAN_START + b'1010101010101010101010101010'
+TEST_GENOME = ORGAN_START + O_PARAM_ONE + O_PARAM_TWO + GENE_START + GENE_TYPE + GENE_RATE + GENE_FUNC +GENE_PARAMS + GENE_START + GENE_TWO + GENE_TWO_FUNC + GENE_TWO_PARAMS + GENE_START + GENE_THREE + GENE_THREE_PARAMS + GENE_THREE_CHEMS + ORGAN_START + b'10101101010101010101010101010101011010101010101010101010101010101010101010101010101010'
 
 SEED = None
 
@@ -39,7 +39,7 @@ class FirstTest(unittest.TestCase):
         cls._decoder = DecoderLinkedList()
         cls._decoder.set_genome(TEST_GENOME)
         cls._organism = cls._decoder.read_genome()
-        cls._reaction_gene = cls._organism.get_organs()[0].get_genes()[2]
+        #cls._reaction_gene = cls._organism.get_organs()[0].get_genes()[2]
         
     def test01(self):
         """
@@ -47,7 +47,7 @@ class FirstTest(unittest.TestCase):
         """
         print("=================== TEST 1 ======================")
         self._organism.describe()
-        self.assertTrue(len(self._organism.get_organs()) == 2)
+        self.assertTrue(len(self._organism.get_organs()) == 1)
         
     def test01_5(self):
         """
