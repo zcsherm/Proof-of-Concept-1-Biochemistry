@@ -10,6 +10,7 @@ import Constructor
 from Constructor import Decoder, DecoderLinkedList
 from Reproduction import *
 
+
 ORGAN_START = b'11001000'
 O_PARAM_ONE = b'00001'
 O_PARAM_TWO = b'00101'
@@ -106,3 +107,73 @@ class TestOne(unittest.TestCase):
         Test that increment frame works in normal situations
         """
         self.assertEqual(TEST_G, increment_frame(TEST_H,-1))
+
+    def test09(self):
+        """
+        Test difference between genomes with full random
+        """
+        scores = []
+        for _ in range(100):
+            count = 0
+            new = random_bit_flip_string(self._organism, .01)
+            for i in range(1,len(new)):
+                if new[i] == self._organism.get_genome()[i]:
+                    count += 1
+            score = count/len(new)
+            scores.append(score)
+        sb.countplot(scores)
+        plt.show()
+
+    def test10(self):
+        """
+        Same as above, but now we test phenotype similarity
+        Maybe add a print out for organsisms with differing quantities?
+        How to test parameter similiarity? If a gene is added, how can you tell what the parent is supposed to be? Maybe the ID is inherited?
+        """
+        number_dif_organs = 0
+        number_dif_genes = 0
+        number_dif_params = 0
+        num_organs = len(self._organism.get_organs())
+        num_of_genes = sum([len(organ.get_genes() for organ in self._organism.get_organs()])
+        for _ in range(100):
+            new = random_bit_flip_string(self._organism, .01)
+            self._decoder.set_genome(new)
+            creature = self._decoder.read_genome()
+            if creature.get_organs() != num_organs:
+                number_dif_organs += 1
+            if sum([len(organ.get_genes() for organ in self._organism.get_organs()] != num__of_genes:
+                number_dif_genes += 1
+        print(f"\nOut of 100 random bitflips, there were {number_dif_organs} creatures with a different amount of organs, and {number_dif_genes} creatures with a different number of genes.")
+        
+class TestTwo(unittest.TestCase):
+    """
+    Now we'll do some examinations on mutation over time, mainly parthenogenic
+    """
+    @classmethod
+    def setUpClass(cls):
+        """
+        Initialize the constructor and read the test genome
+        """
+        cls._decoder = DecoderLinkedList()
+        cls._decoder.set_genome(TEST_GENOME)
+        cls._organism = cls._decoder.read_genome()
+        cls._emitter_gene = cls._organism.get_organs()[0].get_genes()[0]
+        cls._receptor_gene = cls._organism.get_organs()[0].get_genes()[1]
+        cls._reaction_gene = cls._organism.get_organs()[0].get_genes()[2]
+        
+    def setUp(self):
+        print(f"\n==================== {self._testMethodName} ====================\n")
+
+    def test01(self):
+        """
+        Produce 100 generations descended from test genome, printing description every 10 gens
+        """
+        self._organism.describe()
+        for i in range(1,101):
+            self._decoder.set_genome(random_bit_flip_string(self._organism))
+            org = self._decoder.read_genome()
+            if i % 10 == 0:
+                print(f"=========== Gen {i} ============")
+                org.describe()
+                print()
+        
