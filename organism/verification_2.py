@@ -421,6 +421,8 @@ def decode_x_times(decoder, times, genome_length = 400):
         new_creature = decoder.read_genome()
         datum.append(analyze_organism(new_creature))
         organ_datum = analyze_organs(new_creature,organ_datum)
+        if j == times-1:
+            new_creature.describe()
     organ_df = pd.DataFrame(organ_datum, columns=['Organ Count'])
     for row in datum:
         new_row_df = pd.DataFrame([row])

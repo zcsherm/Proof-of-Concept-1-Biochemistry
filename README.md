@@ -112,3 +112,7 @@ Finally, this refactoring and reworking necessitated new unit tests.
 Was sick the last few days so progress was slow. I got the new unit tests working with the genome data stored a linked list. I also added a break condition on reading a genome. It will not read the last 100 bits. This just prevents an incomplete organ or gene from being created. Probably will find a more elegant solution. I also changed the opcodes to be inside of a range instead of specific values and that the default read length is 8 bits, instead of 5. This should give more space between organs. I found that a genome of 4800 length had a pretty decent number of genes each.
 
 I am beginning to move to stage 2 testing. I have most methods for mutation implemented, but need testing to confirm working. I also need to find a way to compare organisms for similarity. Perhaps each genes params decodes to a string that represents it?
+
+11/5
+
+Still sick, but had an idea for instinct and child rearing. Perhaps only a portion of the NN weights are inherited, but most come from being near adults. 
